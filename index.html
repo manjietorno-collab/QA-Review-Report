@@ -54,10 +54,11 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); font
 .kpi-lbl { font-size: 10px; opacity: 0.5; text-transform: uppercase; letter-spacing: 0.6px; margin-top: 3px; }
 
 /* ─── TABS ─── */
-.tab-bar { background: var(--surface); border-bottom: 2px solid var(--border); display: flex; padding: 0 32px; gap: 2px; }
-.tab-btn { padding: 11px 18px; font-size: 12px; font-weight: 500; color: var(--text-2); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s; white-space: nowrap; font-family: var(--sans); background: none; border-top: none; border-left: none; border-right: none; }
+.tab-bar { background: var(--surface); border-bottom: 2px solid var(--border); display: flex; padding: 0 32px; gap: 2px; position: relative; z-index: 10; }
+.tab-btn { padding: 11px 18px; font-size: 12px; font-weight: 500; color: var(--text-2); cursor: pointer; border-bottom: 2px solid transparent; margin-bottom: -2px; transition: all .15s; white-space: nowrap; font-family: var(--sans); background: none; border-top: none; border-left: none; border-right: none; position: relative; z-index: 10; }
 .tab-btn:hover { color: var(--text); }
 .tab-btn.on { color: var(--accent); border-bottom-color: var(--accent); }
+.dr-bar { background: var(--surface-2); border-bottom: 1px solid var(--border); padding: 8px 32px; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; position: relative; z-index: 1; }
 
 /* ─── PAGES ─── */
 .pg { display: none; padding: 24px 32px; }
@@ -69,6 +70,8 @@ body { font-family: var(--sans); background: var(--bg); color: var(--text); font
 .pT2 { background: var(--t2-bg); color: var(--t2); }
 .pT3 { background: var(--t3-bg); color: var(--t3); }
 .pOnboarding { background: var(--ob-bg); color: var(--ob); }
+.pTeamLead { background: #ede9fe; color: #5b21b6; }
+.pManager  { background: #fce7f3; color: #9d174d; }
 
 /* ─── SCORE COLOUR ─── */
 .sc-hi { color: var(--green); font-weight: 600; }
@@ -115,6 +118,7 @@ select:focus, input[type=text]:focus { border-color: var(--accent-2); }
 
 /* ─── INSIGHTS ─── */
 .ins-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.ins-row { display: flex; gap: 16px; flex-wrap: wrap; }
 .ins-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--r-lg); padding: 18px; }
 .ins-card h3 { font-size: 13px; font-weight: 600; margin-bottom: 12px; display: flex; align-items: center; gap: 8px; }
 .ins-card h3 .dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
@@ -176,6 +180,17 @@ select:focus, input[type=text]:focus { border-color: var(--accent-2); }
 .freq-mini .bar-fg-r { height: 100%; background: #f87171; border-radius: 3px; }
 .freq-mini .bar-fg-g { height: 100%; background: #4ade80; border-radius: 3px; }
 .freq-mini .cnt { font-family: var(--mono); font-size: 10px; color: var(--text-3); width: 18px; text-align: right; }
+.freq-bar-row { display:flex; align-items:center; gap:8px; margin-bottom:8px; font-size:12px; }
+.freq-lbl { min-width:210px; max-width:210px; color:var(--gray); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.freq-track { flex:1; height:8px; background:var(--surface-2); border-radius:4px; overflow:hidden; }
+.freq-fill { height:100%; border-radius:4px; }
+.fill-red   { background:#e24b4a; }
+.fill-amber { background:#ef9f27; }
+.fill-coral { background:#d85a30; }
+.fill-teal  { background:#09825d; }
+.freq-cnt { min-width:28px; text-align:right; font-weight:600; color:var(--gray); font-size:11px; }
+.dr-preset { padding:3px 10px; border-radius:12px; border:1px solid var(--border); background:transparent; cursor:pointer; font-size:11px; font-weight:500; color:var(--text-2); }
+.dr-preset.on { background:var(--forest); color:#fff; border-color:var(--forest); }
 @media (max-width: 800px) {
   .tier-kpis { grid-template-columns: repeat(2,1fr); }
   .tier-two-col { grid-template-columns: 1fr; }
@@ -195,13 +210,13 @@ select:focus, input[type=text]:focus { border-color: var(--accent-2); }
 <div class="hd">
   <div class="hd-title">
     <h1>Q2 Support QA Dashboard</h1>
-    <p>April 1–16, 2026 · T1 / T2 / T3 / Onboarding · Agents only (TLs & Managers excluded)</p>
+    <p>April 1 – May 5, 2026 · T1 / T2 / T3 / Onboarding · Agents only (TLs & Managers excluded)</p>
   </div>
   <div class="hd-kpis">
-    <div class="kpi"><div class="kpi-val">95.5%</div><div class="kpi-lbl">Overall Avg</div></div>
-    <div class="kpi"><div class="kpi-val">199</div><div class="kpi-lbl">Audits</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-avg">95.0%</div><div class="kpi-lbl">Overall Avg</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-audits">381</div><div class="kpi-lbl">Audits</div></div>
     <div class="kpi"><div class="kpi-val">85%</div><div class="kpi-lbl">Goal</div></div>
-    <div class="kpi"><div class="kpi-val">+10.5</div><div class="kpi-lbl">vs Goal</div></div>
+    <div class="kpi"><div class="kpi-val" id="kpi-vsgoal">+10.0</div><div class="kpi-lbl">vs Goal</div></div>
   </div>
 </div>
 
@@ -211,11 +226,29 @@ select:focus, input[type=text]:focus { border-color: var(--accent-2); }
   <button class="tab-btn" onclick="showTab('afi',this)">AFIs by Agent</button>
   <button class="tab-btn" onclick="showTab('www',this)">What Went Well</button>
   <button class="tab-btn" onclick="showTab('insights',this)">Insights</button>
+  <button class="tab-btn" onclick="showTab('afi-www',this)">Top AFIs &amp; WWW</button>
   <button class="tab-btn" onclick="showTab('tier-view',this)" style="border-left:1px solid var(--border);margin-left:8px;padding-left:20px">Tier View</button>
   <div style="flex:1"></div>
-  <a href="https://manjietorno-collab.github.io/DSAT-Report/" target="_blank" style="display:flex;align-items:center;gap:6px;padding:0 18px;font-size:12px;font-weight:500;color:var(--red);text-decoration:none;border-left:1px solid var(--border);margin-left:8px;white-space:nowrap;transition:opacity .15s;" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">
+  <a href="https://dsat-weeklyreport.cub.pandadoc.cc/" target="_blank" style="display:flex;align-items:center;gap:6px;padding:0 18px;font-size:12px;font-weight:500;color:var(--red);text-decoration:none;border-left:1px solid var(--border);margin-left:8px;white-space:nowrap;transition:opacity .15s;" onmouseover="this.style.opacity='.7'" onmouseout="this.style.opacity='1'">
     ↗ DSAT Report
   </a>
+</div>
+
+<!-- ═══ DATE RANGE FILTER BAR ═══ -->
+<div class="dr-bar">
+  <span style="font-size:11px;font-weight:500;color:var(--text-2);white-space:nowrap">Date range</span>
+  <input type="date" id="dr-from" value="2026-04-01" min="2026-04-01" max="2026-05-05"
+    onchange="applyDateRange()"
+    style="font-size:11px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);cursor:pointer;">
+  <span style="font-size:11px;color:var(--text-3)">to</span>
+  <input type="date" id="dr-to" value="2026-05-05" min="2026-04-01" max="2026-05-05"
+    onchange="applyDateRange()"
+    style="font-size:11px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;background:var(--surface);color:var(--text);cursor:pointer;">
+  <div style="width:1px;height:16px;background:var(--border);margin:0 4px;"></div>
+  <button class="dr-preset on" onclick="setPreset('2026-04-01','2026-05-05',this)">All</button>
+  <button class="dr-preset" onclick="setPreset('2026-04-01','2026-04-30',this)">April</button>
+  <button class="dr-preset" onclick="setPreset('2026-05-01','2026-05-05',this)">May</button>
+  <span style="margin-left:auto;font-size:11px;color:var(--text-3)" id="dr-audit-count">381 audits · 31 agents</span>
 </div>
 
 <!-- ═══════════════════════════════════════════════
@@ -223,31 +256,26 @@ select:focus, input[type=text]:focus { border-color: var(--accent-2); }
 ════════════════════════════════════════════════ -->
 <div id="pg-dashboard" class="pg on">
 
-  <div class="strip" style="grid-template-columns:repeat(6,1fr)">
+  <div class="strip" style="grid-template-columns:repeat(4,1fr)">
     <div class="stile">
-      <div class="stile-val" style="color:var(--green)">97.4%</div>
-      <div class="stile-lbl">Top Team</div>
-      <div class="stile-sub">Manila – Edward</div>
+      <div class="stile-val" style="color:var(--green)" id="strip-avg">95.0%</div>
+      <div class="stile-lbl">Overall QA Avg</div>
+      <div class="stile-sub" id="strip-period">April 1 – May 5, 2026</div>
     </div>
     <div class="stile">
-      <div class="stile-val" style="color:var(--amber)">91.9%</div>
-      <div class="stile-lbl">Focus Team</div>
-      <div class="stile-sub">US – Corey</div>
+      <div class="stile-val" id="strip-audits">381</div>
+      <div class="stile-lbl">Audits</div>
+      <div class="stile-sub">31 agents · 5 teams</div>
     </div>
     <div class="stile">
-      <div class="stile-val" style="color:var(--green)">96.6%</div>
-      <div class="stile-lbl">Top Tier</div>
-      <div class="stile-sub">T2 avg · 69 audits</div>
+      <div class="stile-val">85%</div>
+      <div class="stile-lbl">QA Goal</div>
+      <div class="stile-sub" id="kpi-passing">31 / 31 agents passing</div>
     </div>
     <div class="stile">
-      <div class="stile-val" style="color:var(--amber)">93.1%</div>
-      <div class="stile-lbl">Onboarding Avg</div>
-      <div class="stile-sub">11 audits · 4 agents</div>
-    </div>
-    <div class="stile">
-      <div class="stile-val">30 / 32</div>
-      <div class="stile-lbl">Agents ≥ 85%</div>
-      <div class="stile-sub">Of audited agents this period</div>
+      <div class="stile-val" style="color:var(--green)" id="strip-vsgoal">+10.0</div>
+      <div class="stile-lbl">vs Goal</div>
+      <div class="stile-sub">95.0% − 85% baseline</div>
     </div>
   </div>
 
@@ -259,6 +287,15 @@ select:focus, input[type=text]:focus { border-color: var(--accent-2); }
       <option value="T2">T2</option>
       <option value="T3">T3</option>
       <option value="Onboarding">Onboarding</option>
+    </select>
+    <label>Filter by team</label>
+    <select id="dash-team" onchange="renderDash()">
+      <option value="">All Teams</option>
+      <option value="Manila - Team Edward">Manila – Team Edward</option>
+      <option value="EU - Team Miia">EU – Team Miia</option>
+      <option value="Manila - Team Madz">Manila – Team Madz</option>
+      <option value="Tier 3">Tier 3</option>
+      <option value="US - Team Corey">US – Team Corey</option>
     </select>
     <label>Sort by</label>
     <select id="dash-sort" onchange="renderDash()">
@@ -348,167 +385,142 @@ select:focus, input[type=text]:focus { border-color: var(--accent-2); }
      TAB 4 — INSIGHTS
 ════════════════════════════════════════════════ -->
 <div id="pg-insights" class="pg">
-  <div class="ins-grid">
+  <div class="page-inner">
 
-    <!-- Top performers -->
-    <div class="ins-card">
-      <h3><span class="dot green"></span>Top Performers This Period</h3>
-      <div class="ins-item">
-        <div>
-          <div class="agent-n">Cramer Magsalansan <span class="pill pT1">T1</span></div>
-          <div class="note">Perfect scores across all 9 audits. Zero AFIs. Validated customer financial concerns with phrases like "I completely hear you" and "I acknowledge that every dollar counts." Proactively attached likely invoices before customers asked.</div>
-        </div>
-        <span class="score-badge badge-green">100%</span>
-      </div>
-      <div class="ins-item">
-        <div>
-          <div class="agent-n">Alvin Tambalo <span class="pill pT2">T2</span></div>
-          <div class="note">Perfect scores across 5 audits. Zero AFIs. Pivoted a "no" into an Enterprise trial activation when Free eSign couldn't meet customer POC needs — showed flexible ownership.</div>
-        </div>
-        <span class="score-badge badge-green">100%</span>
-      </div>
-      <div class="ins-item">
-        <div>
-          <div class="agent-n">Albina · Inna · Lindsey · Yana <span class="pill pT3">T3</span></div>
-          <div class="note">All four T3 agents achieved 100% QA with zero AFIs. Inna proactively monitored an EU database outage and confirmed resolution without customer follow-up. Lindsey provided a 7-step Salesforce workaround that unblocked a full team.</div>
-        </div>
-        <span class="score-badge badge-green">100%</span>
-      </div>
-      <div class="ins-item">
-        <div>
-          <div class="agent-n">Mark Reyes <span class="pill pT2">T2</span></div>
-          <div class="note">98.4% avg. Humanized a $108 refund denial by connecting over a customer's son's name — turned a potential churn into a positive interaction. Consistent ownership and proactive communication throughout.</div>
-        </div>
-        <span class="score-badge badge-green">98.4%</span>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:8px;">
+      <div>
+        <div style="font-size:16px;font-weight:500;color:var(--gray)">AFIs &amp; What Went Well — by Section</div>
+        <div style="font-size:12px;color:var(--text-2);margin-top:3px" id="insights-period-label">April 1 – May 5, 2026 · 381 audits</div>
       </div>
     </div>
 
-    <!-- Focus agents -->
-    <div class="ins-card">
-      <h3><span class="dot red"></span>Agents Requiring Focus</h3>
-      <div class="ins-item">
-        <div>
-          <div class="agent-n">Jack Allan <span class="pill pT1">T1</span></div>
-          <div class="note">83.3% avg · 33% pass rate (2/6). Key miss: took ownership initially but never returned — ticket auto-closed by bot. Recurring AFIs: unclear ownership, incomplete resolution, lack of timely follow-up. Phrases like "I'm not 100% sure" undermine customer confidence.</div>
-        </div>
-        <span class="score-badge badge-red">83.3%</span>
+    <!-- Row 1: S1 AFI + S1 WWW -->
+    <div class="ins-row" style="margin-bottom:16px">
+      <div class="ins-card" style="flex:1">
+        <h3><span class="dot red"></span>S1 — Empathy &amp; Communication · AFIs</h3>
+        <div id="ins-afi-s1"></div>
       </div>
-      <div class="ins-item">
-        <div>
-          <div class="agent-n">Sasha/Alex. Sakhibov <span class="pill pT3">T3</span></div>
-          <div class="note">83% avg · 50% pass rate. Multiple 7–10 day gaps without status updates — only responds after customers follow up. This pattern is inconsistent with T3 ownership expectations. Coaching priority: proactive mid-investigation updates.</div>
-        </div>
-        <span class="score-badge badge-red">83%</span>
-      </div>
-      <div class="ins-item">
-        <div>
-          <div class="agent-n">Autumn Seiberg <span class="pill pT1">T1</span></div>
-          <div class="note">87.2% avg. Failed to address both customer requests (document download + unsubscribe) in one interaction — focused only on billing. Multiple missed empathy and incomplete resolution flags. Coaching: read full message before drafting response.</div>
-        </div>
-        <span class="score-badge badge-amber">87.2%</span>
-      </div>
-      <div class="ins-item">
-        <div>
-          <div class="agent-n">Rachele Ong <span class="pill pT2">T2</span></div>
-          <div class="note">91.2% avg · 60% pass rate. Probing questions flagged as too generic — not tailored to customer's specific situation. Robotic phrasing noted across multiple audits. Coaching: personalize follow-up questions to context already shared by customer.</div>
-        </div>
-        <span class="score-badge badge-amber">91.2%</span>
+      <div class="ins-card" style="flex:1">
+        <h3><span class="dot green"></span>S1 — Empathy &amp; Communication · What Went Well</h3>
+        <div id="ins-www-s1"></div>
       </div>
     </div>
 
-    <!-- Top AFIs this period -->
-    <div class="ins-card">
-      <h3><span class="dot red"></span>Most Common AFIs — April 1–16, 2026</h3>
-      <div id="top-afi-chart"></div>
+    <!-- Row 2: S2 AFI + S2 WWW -->
+    <div class="ins-row" style="margin-bottom:16px">
+      <div class="ins-card" style="flex:1">
+        <h3><span class="dot red"></span>S2 — Problem Solving &amp; Accuracy · AFIs</h3>
+        <div id="ins-afi-s2"></div>
+      </div>
+      <div class="ins-card" style="flex:1">
+        <h3><span class="dot green"></span>S2 — Problem Solving &amp; Accuracy · What Went Well</h3>
+        <div id="ins-www-s2"></div>
+      </div>
     </div>
 
-    <!-- Top WWW this period -->
-    <div class="ins-card">
-      <h3><span class="dot green"></span>Most Common What Went Well — April 1–16, 2026</h3>
-      <div id="top-www-chart"></div>
+    <!-- Row 3: S3 AFI + S3 WWW -->
+    <div class="ins-row" style="margin-bottom:16px">
+      <div class="ins-card" style="flex:1">
+        <h3><span class="dot red"></span>S3 — Process Compliance · AFIs</h3>
+        <div id="ins-afi-s3"></div>
+      </div>
+      <div class="ins-card" style="flex:1">
+        <h3><span class="dot green"></span>S3 — Process Compliance · What Went Well</h3>
+        <div id="ins-www-s3"></div>
+      </div>
     </div>
 
-    <!-- Team summary -->
-    <div class="ins-card" style="grid-column: 1 / -1;">
-      <h3><span class="dot blue"></span>Team & Tier Summary</h3>
-      <div class="tbl-wrap" style="border:none; border-radius:0; max-height:none; overflow-y:visible;">
+    <!-- Team summary (kept static — always shows full period) -->
+    <div class="ins-card" style="margin-top:4px">
+      <h3><span class="dot blue"></span>Team &amp; Tier Summary — Full Period</h3>
+      <div class="tbl-wrap" style="border:none;border-radius:0;max-height:none;overflow-y:visible;">
         <table>
           <thead>
             <tr>
-              <th>Team</th>
-              <th>T1 Avg</th>
-              <th>T2 Avg</th>
-              <th>T3 Avg</th>
-              <th>Onboarding Avg</th>
-              <th>Overall Avg</th>
-              <th>Audits</th>
-              <th>Pass Rate</th>
+              <th>Team</th><th>T1 Avg</th><th>T2 Avg</th><th>T3 Avg</th><th>Onboarding Avg</th><th>Overall Avg</th><th>Audits</th><th>Pass Rate</th>
             </tr>
           </thead>
           <tbody>
             <tr>
               <td><strong>Manila – Team Edward</strong></td>
-              <td class="mono sc-hi">97.3%</td>
-              <td class="mono sc-hi">98.3%</td>
-              <td class="mono na-cell">—</td>
-              <td class="mono sc-ok">94.0%</td>
-              <td class="mono sc-hi">97.4%</td>
-              <td class="mono">69</td>
-              <td class="mono sc-hi">93.5%</td>
+              <td class="mono sc-hi">96.9%</td><td class="mono sc-ok">93.8%</td><td class="mono na-cell">—</td><td class="mono sc-ok">92.3%</td>
+              <td class="mono sc-hi">96.0%</td><td class="mono">115</td><td class="mono sc-ok">87.8%</td>
             </tr>
             <tr>
               <td><strong>EU – Team Miia</strong></td>
-              <td class="mono na-cell">—</td>
-              <td class="mono sc-hi">97.1%</td>
-              <td class="mono na-cell">—</td>
-              <td class="mono sc-ok">92.6%</td>
-              <td class="mono sc-hi">96.5%</td>
-              <td class="mono">39</td>
-              <td class="mono sc-ok">87.2%</td>
+              <td class="mono sc-hi">98.1%</td><td class="mono sc-ok">94.8%</td><td class="mono na-cell">—</td><td class="mono sc-ok">90.4%</td>
+              <td class="mono sc-ok">95.3%</td><td class="mono">71</td><td class="mono sc-lo">87.3%</td>
             </tr>
             <tr>
               <td><strong>Manila – Team Madz</strong></td>
-              <td class="mono sc-hi">95.5%</td>
-              <td class="mono sc-ok">93.5%</td>
-              <td class="mono na-cell">—</td>
-              <td class="mono na-cell">—</td>
-              <td class="mono sc-hi">94.7%</td>
-              <td class="mono">27</td>
-              <td class="mono sc-ok">85.2%</td>
+              <td class="mono sc-ok">94.6%</td><td class="mono sc-ok">91.7%</td><td class="mono na-cell">—</td><td class="mono na-cell">—</td>
+              <td class="mono sc-ok">93.6%</td><td class="mono">59</td><td class="mono sc-nd">76.3%</td>
             </tr>
             <tr>
               <td><strong>Tier 3</strong></td>
-              <td class="mono na-cell">—</td>
-              <td class="mono na-cell">—</td>
-              <td class="mono sc-hi">95.3%</td>
-              <td class="mono na-cell">—</td>
-              <td class="mono sc-hi">95.3%</td>
-              <td class="mono">23</td>
-              <td class="mono sc-ok">82.6%</td>
+              <td class="mono na-cell">—</td><td class="mono sc-hi">100.0%</td><td class="mono sc-ok">96.5%</td><td class="mono na-cell">—</td>
+              <td class="mono sc-hi">97.2%</td><td class="mono">46</td><td class="mono sc-ok">93.5%</td>
             </tr>
             <tr>
               <td><strong>US – Team Corey</strong></td>
-              <td class="mono sc-ok">90.1%</td>
-              <td class="mono sc-ok">94.7%</td>
-              <td class="mono na-cell">—</td>
-              <td class="mono na-cell">—</td>
-              <td class="mono sc-lo">91.9%</td>
-              <td class="mono">48</td>
-              <td class="mono sc-lo">72.9%</td>
+              <td class="mono sc-ok">92.8%</td><td class="mono sc-ok">95.3%</td><td class="mono na-cell">—</td><td class="mono na-cell">—</td>
+              <td class="mono sc-ok">93.5%</td><td class="mono">90</td><td class="mono sc-nd">76.7%</td>
             </tr>
             <tr style="background:var(--surface-2);font-weight:600;">
               <td>All Teams</td>
-              <td class="mono sc-ok">94.9%</td>
-              <td class="mono sc-hi">96.6%</td>
-              <td class="mono sc-hi">95.3%</td>
-              <td class="mono sc-ok">93.1%</td>
-              <td class="mono sc-hi">95.4%</td>
-              <td class="mono">206</td>
-              <td class="mono sc-ok">85.0%</td>
+              <td class="mono sc-ok">95.5%</td><td class="mono sc-ok">94.4%</td><td class="mono sc-ok">96.7%</td><td class="mono sc-ok">91.5%</td>
+              <td class="mono sc-ok">95.0%</td><td class="mono">381</td><td class="mono sc-lo">86.4%</td>
             </tr>
           </tbody>
         </table>
       </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════════════
+     TOP AFIs & WWW PAGE
+════════════════════════════════════════════════ -->
+<div id="pg-afi-www" class="pg">
+  <div class="page-inner">
+
+    <div class="ins-row">
+
+      <!-- TOP AFIs CARD -->
+      <div class="ins-card" style="flex:1">
+        <h3><span class="dot red"></span>Top Areas for Improvement (AFIs)</h3>
+        <p style="font-size:12px;color:var(--muted);margin:0 0 16px">Across all agents · <span class="afi-www-period">April 1 – May 5, 2026</span></p>
+
+        <div style="margin-bottom:24px">
+          <div style="font-size:11px;font-weight:600;color:var(--forest);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">S3 — Process Compliance</div>
+          <div id="afi-s3-bars"></div>
+        </div>
+        <div style="margin-bottom:24px">
+          <div style="font-size:11px;font-weight:600;color:var(--forest);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">S1 — Empathy &amp; Communication</div>
+          <div id="afi-s1-bars"></div>
+        </div>
+        <div>
+          <div style="font-size:11px;font-weight:600;color:var(--forest);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">S2 — Problem Solving &amp; Accuracy</div>
+          <div id="afi-s2-bars"></div>
+        </div>
+      </div>
+
+      <!-- TOP WWW CARD -->
+      <div class="ins-card" style="flex:1">
+        <h3><span class="dot green"></span>Top What Went Well (WWW)</h3>
+        <p style="font-size:12px;color:var(--muted);margin:0 0 16px">Across all agents · <span class="afi-www-period">April 1 – May 5, 2026</span></p>
+        <div id="www-all-bars"></div>
+      </div>
+
+    </div>
+
+    <!-- SECTION LEGEND -->
+    <div style="display:flex;gap:24px;flex-wrap:wrap;margin-top:8px;padding:14px 20px;background:var(--surface);border-radius:8px;border:1px solid var(--border);font-size:12px;color:var(--muted)">
+      <span><strong style="color:var(--gray)">S1</strong> — Empathy, Communication &amp; Ownership</span>
+      <span><strong style="color:var(--gray)">S2</strong> — Problem Solving &amp; Accuracy</span>
+      <span><strong style="color:var(--gray)">S3</strong> — Process Compliance</span>
+      <span style="margin-left:auto">381 audits · 31 agents · April 1 – May 5, 2026</span>
     </div>
 
   </div>
@@ -532,106 +544,536 @@ select:focus, input[type=text]:focus { border-color: var(--accent-2); }
 
 <!-- ═══ DATA + LOGIC ═══ -->
 <script>
-const AGENTS = [
-  {a:"Adrienne Madrigal",     t:"Onboarding", tm:"Manila - Team Edward", n:1,  qa:100.0, pr:100.0, s1:100.0, s2:100.0, s3:100.0,
-   afis:{s1:[],s2:[],s3:[]},
-   www:{s1:["Polite","Proactive"],s2:["Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Al Reenan Lodonia",     t:"Onboarding", tm:"Manila - Team Edward", n:1,  qa:88.0,  pr:100.0, s1:60.0,  s2:100.0, s3:100.0,
-   afis:{s1:["Missed empathy"],s2:[],s3:[]},
-   www:{s1:["Polite","Proactive"],s2:["Asked the right questions"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Albina Khonina",        t:"T3", tm:"Tier 3 ",                n:3,  qa:100.0, pr:100.0, s1:100.0, s2:100.0, s3:100.0,
-   afis:{s1:[],s2:[],s3:[]},
-   www:{s1:["Polite","Proactive","Showed Strong Empathy"],s2:["Accurate resolves the issue","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Alvin Tambalo",         t:"T2", tm:"Manila - Team Edward",  n:5,  qa:100.0, pr:100.0, s1:100.0, s2:100.0, s3:100.0,
-   afis:{s1:[],s2:[],s3:[]},
-   www:{s1:["Polite","Proactive","Showed Strong Empathy"],s2:["Accurate resolves the issue","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Ana Manuel",            t:"T1", tm:"Manila - Team Edward",  n:7,  qa:98.3,  pr:100.0, s1:100.0, s2:100.0, s3:94.3,
-   afis:{s1:[],s2:[],s3:["Incorrect Tagging"]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Anastasiya Zhuk",       t:"T2", tm:"EU - Team Miia",        n:9,  qa:96.9,  pr:88.9,  s1:100.0, s2:95.6,  s3:95.6,
-   afis:{s1:[],s2:["Prolonged interaction"],s3:["Incomplete Documentation"]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided","Ensure resolution"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Autumn Seiberg",        t:"T1", tm:"US - Team Corey",       n:9,  qa:87.1,  pr:77.8,  s1:95.6,  s2:77.8,  s3:91.1,
-   afis:{s1:["Missed empathy","Others","Polite but generic"],s2:["Incomplete Resolution","Incomplete or Lack of Probing","Others"],s3:["Incomplete Documentation","Incorrect Tagging"]},
-   www:{s1:["Ownership","Polite","Proactive","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided"],s3:["Complete internal notes","Correctly tagged ticket","Followed Escalation Process","Fully compliant"]}},
-  {a:"Cedrick Angeles",       t:"T1", tm:"Manila - Team Madz",    n:8,  qa:95.0,  pr:87.5,  s1:95.0,  s2:95.0,  s3:95.0,
-   afis:{s1:[],s2:["Prolonged interaction"],s3:["Incorrect Tagging"]},
-   www:{s1:["Polite","Proactive","Showed Strong Empathy"],s2:["Asked the right questions","Complete information provided"],s3:["Complete internal notes","Correctly tagged ticket","Follow-up as promised","Followed Escalation Process","Fully compliant"]}},
-  {a:"Cramer Magsalansan",    t:"T1", tm:"Manila - Team Edward",  n:9,  qa:100.0, pr:100.0, s1:100.0, s2:100.0, s3:100.0,
-   afis:{s1:[],s2:[],s3:[]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Ella Bumatay",          t:"T1", tm:"Manila - Team Madz",    n:7,  qa:96.0,  pr:85.7,  s1:100.0, s2:94.3,  s3:94.3,
-   afis:{s1:[],s2:["Missed offering next steps","Partial Context Missed"],s3:["Incomplete Documentation","Incorrect Tagging"]},
-   www:{s1:["Polite","Proactive","Showed Strong Empathy"],s2:["Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Elly San Juan",         t:"T3", tm:"Tier 3 ",               n:3,  qa:94.7,  pr:66.7,  s1:100.0, s2:86.7,  s3:100.0,
-   afis:{s1:[],s2:["Prolonged interaction"],s3:[]},
-   www:{s1:["Ownership","Polite","Proactive"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Gladness Mtui",         t:"T1", tm:"US - Team Corey",       n:11, qa:96.4,  pr:90.9,  s1:100.0, s2:96.4,  s3:92.7,
-   afis:{s1:[],s2:[],s3:["Data Privacy Breach","Incorrect Tagging","Mis-escalated to T3"]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided","Ensure resolution"],s3:["Complete internal notes","Correctly tagged ticket","Follow-up as promised","Fully compliant"]}},
-  {a:"Grace Ann Bacolod",     t:"T1", tm:"Manila - Team Edward",  n:7,  qa:96.0,  pr:85.7,  s1:100.0, s2:94.3,  s3:94.3,
-   afis:{s1:["Repetitive Acknowledgement/Introduction"],s2:["Redundant / Prior Context"],s3:["Incorrect Tagging"]},
-   www:{s1:["Polite","Proactive","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Inna Babii",            t:"T3", tm:"Tier 3 ",               n:4,  qa:100.0, pr:100.0, s1:100.0, s2:100.0, s3:100.0,
-   afis:{s1:[],s2:[],s3:[]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Complete information provided","Ensure resolution"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Jack Allan",            t:"T1", tm:"US - Team Corey",       n:5,  qa:85.6,  pr:40.0,  s1:92.0,  s2:76.0,  s3:92.0,
-   afis:{s1:["Lack of timely follow-up","Unclear Ownership"],s2:["Incomplete Resolution","Missing Context"],s3:["Incomplete Documentation"]},
-   www:{s1:["Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Jay Masternak",         t:"T2", tm:"EU - Team Miia",        n:9,  qa:97.3,  pr:100.0, s1:91.1,  s2:100.0, s3:100.0,
-   afis:{s1:["Missed empathy"],s2:[],s3:[]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Jd Dela Llana",         t:"T2", tm:"Manila - Team Madz",    n:7,  qa:95.7,  pr:85.7,  s1:100.0, s2:100.0, s3:85.7,
-   afis:{s1:[],s2:["Others"],s3:["Incorrect Tagging"]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Follow-up as promised","Followed Escalation Process","Fully compliant"]}},
-  {a:"Johnabell Tampos",      t:"Onboarding", tm:"Manila - Team Edward", n:2, qa:94.0, pr:100.0, s1:100.0, s2:100.0, s3:80.0,
-   afis:{s1:[],s2:[],s3:["Incorrect Tagging"]},
-   www:{s1:["Polite","Proactive"],s2:["Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Jonathon Gillis",       t:"T1", tm:"US - Team Corey",       n:8,  qa:93.0,  pr:62.5,  s1:95.0,  s2:90.0,  s3:95.0,
-   afis:{s1:["Others"],s2:["Incomplete or Lack of Probing","Others","Prolonged interaction"],s3:["Incorrect Tagging"]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Koby Kobayashi",        t:"T1", tm:"Manila - Team Edward",  n:10, qa:93.0,  pr:80.0,  s1:92.0,  s2:96.0,  s3:90.0,
-   afis:{s1:["Others","Polite but generic"],s2:["Partial Context Missed"],s3:["Incorrect Mis-escalation Tagging","Mis-escalated to T3"]},
-   www:{s1:["Polite","Proactive","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided"],s3:["Complete internal notes","Correctly tagged ticket","Fully compliant"]}},
-  {a:"Lindsey Schocke",       t:"T3", tm:"Tier 3 ",               n:2,  qa:100.0, pr:100.0, s1:100.0, s2:100.0, s3:100.0,
-   afis:{s1:[],s2:[],s3:[]},
-   www:{s1:["Polite","Proactive","Showed Strong Empathy"],s2:["Accurate resolves the issue","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Maria Golecka",         t:"T2", tm:"EU - Team Miia",        n:2,  qa:100.0, pr:100.0, s1:100.0, s2:100.0, s3:100.0,
-   afis:{s1:[],s2:[],s3:[]},
-   www:{s1:["Polite","Proactive"],s2:["Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Mariia Savych",         t:"Onboarding", tm:"EU - Team Miia",       n:6,  qa:91.3,  pr:83.3,  s1:93.3,  s2:93.3,  s3:86.7,
-   afis:{s1:["Others","Robotic Phrasing"],s2:["Prolonged interaction"],s3:["Incorrect Tagging"]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps"],s2:["Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Follow-up as promised","Fully compliant"]}},
-  {a:"Mark Reyes",            t:"T2", tm:"EU - Team Miia",        n:10, qa:98.4,  pr:90.0,  s1:100.0, s2:96.0,  s3:100.0,
-   afis:{s1:[],s2:["Missed offering next steps"],s3:[]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Patricia Nicole Nepomuceno", t:"T1", tm:"Manila - Team Edward", n:8, qa:98.0, pr:87.5, s1:100.0, s2:95.0, s3:100.0,
-   afis:{s1:[],s2:["Incomplete or Lack of Probing"],s3:[]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Rachele Ong",           t:"T2", tm:"Manila - Team Madz",    n:5,  qa:91.2,  pr:60.0,  s1:92.0,  s2:84.0,  s3:100.0,
-   afis:{s1:["Robotic Phrasing"],s2:["Prolonged interaction","Redundant / Prior Context"],s3:[]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Asked the right questions","Complete information provided"],s3:["Complete internal notes","Correctly tagged ticket","Fully compliant"]}},
-  {a:"Sasha/Alex. Sakhibov",  t:"T3", tm:"Tier 3 ",               n:4,  qa:83.0,  pr:50.0,  s1:80.0,  s2:80.0,  s3:90.0,
-   afis:{s1:["Lack of timely follow-up","Unclear Ownership"],s2:["Didn't Review Prior Context","Incomplete or Lack of Probing","Missing Context","Prolonged interaction"],s3:["Did not follow escalation process"]},
-   www:{s1:["Ownership","Polite","Proactive","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided","Ensure resolution"],s3:["Correctly tagged ticket","Follow-up as promised","Fully compliant"]}},
-  {a:"Savannah Faulkner",     t:"T2", tm:"US - Team Corey",       n:12, qa:94.7,  pr:66.7,  s1:100.0, s2:86.7,  s3:100.0,
-   afis:{s1:[],s2:["Incomplete or Lack of Probing","Missed to provide related information","Partial Context Missed","Prolonged interaction"],s3:["Incorrect Tagging"]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided","Ensure resolution"],s3:["Complete internal notes","Correctly tagged ticket","Follow-up as promised","Followed Escalation Process","Fully compliant"]}},
-  {a:"Sherwin Mendoza",       t:"T2", tm:"Manila - Team Edward",  n:8,  qa:98.0,  pr:87.5,  s1:100.0, s2:95.0,  s3:100.0,
-   afis:{s1:[],s2:["Missing Context"],s3:[]},
-   www:{s1:["Ownership","Polite","Proactive","Showed Strong Empathy"],s2:["Accurate resolves the issue","Complete information provided","Ensure resolution"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Vi Atilano",            t:"T1", tm:"Manila - Team Edward",  n:10, qa:98.8,  pr:100.0, s1:96.0,  s2:100.0, s3:100.0,
-   afis:{s1:["Missed empathy"],s2:["Prolonged interaction"],s3:[]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided","Ensure resolution"],s3:["Correctly tagged ticket","Fully compliant"]}},
-  {a:"Vlad Ausiyevich",       t:"T3", tm:"Tier 3 ",               n:4,  qa:94.0,  pr:100.0, s1:90.0,  s2:100.0, s3:90.0,
-   afis:{s1:["Others"],s2:[],s3:["Incorrect Tagging"]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided","Ensure resolution"],s3:["Complete internal notes","Correctly tagged ticket","Follow-up as promised","Fully compliant"]}},
-  {a:"Yana Martynenko",       t:"T3", tm:"Tier 3 ",               n:3,  qa:100.0, pr:100.0, s1:100.0, s2:100.0, s3:100.0,
-   afis:{s1:[],s2:[],s3:[]},
-   www:{s1:["Ownership","Polite","Proactive","Provides clear next steps","Showed Strong Empathy"],s2:["Accurate resolves the issue","Asked the right questions","Complete information provided","Ensure resolution"],s3:["Correctly tagged ticket","Fully compliant"]}}
+// ── STATE ──
+let drFrom = '2026-04-01';
+let drTo   = '2026-05-05';
+
+const AUDITS = [
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-01",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging","Incomplete Documentation"],w1:["Polite"],w2:["Complete information provided","Asked the right questions"],w3:[]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jack Allan",t:"T1",tm:"US - Team Corey",d:"2026-04-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ana Manuel",t:"T1",tm:"Manila - Team Edward",d:"2026-04-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Patricia Nicole Nepomuceno",t:"T1",tm:"Manila - Team Edward",d:"2026-04-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cedrick Angeles",t:"T1",tm:"Manila - Team Madz",d:"2026-04-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket","Complete internal notes","Follow-up as promised","Followed Escalation Process"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Madz",d:"2026-04-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:[],w2:[],w3:[]},
+{a:"Jd Dela Llana",t:"T2",tm:"Manila - Team Madz",d:"2026-04-01",qa:70.0,s1:100.0,s2:100.0,s3:0.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Follow-up as promised"]},
+{a:"Rachele Ong",t:"T2",tm:"Manila - Team Madz",d:"2026-04-01",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Prolonged interaction"],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jack Allan",t:"T1",tm:"US - Team Corey",d:"2026-04-01",qa:60.0,s1:60.0,s2:60.0,s3:60.0,a1:["Unclear Ownership","Lack of timely follow-up"],a2:["Incomplete Resolution"],a3:["Incomplete Documentation"],w1:["Showed Strong Empathy","Polite"],w2:["Asked the right questions"],w3:["Correctly tagged ticket"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-02",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-02",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions","Ensure resolution"],w3:["Fully compliant"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-02",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-02",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-02",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite"],w2:[],w3:["Fully compliant"]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-04-02",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-02",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-02",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-02",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ana Manuel",t:"T1",tm:"Manila - Team Edward",d:"2026-04-02",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Patricia Nicole Nepomuceno",t:"T1",tm:"Manila - Team Edward",d:"2026-04-02",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Maria Golecka",t:"T2",tm:"EU - Team Miia",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-03",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed empathy"],a2:[],a3:[],w1:["Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-03",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed empathy"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Correctly tagged ticket"]},
+{a:"Cedrick Angeles",t:"T1",tm:"Manila - Team Madz",d:"2026-04-03",qa:72.0,s1:60.0,s2:60.0,s3:100.0,a1:[],a2:["Prolonged interaction"],a3:[],w1:["Polite"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-03",qa:70.0,s1:100.0,s2:100.0,s3:0.0,a1:[],a2:[],a3:["Mis-escalated to T3","Incorrect Mis-escalation Tagging"],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Complete internal notes"]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Albina Khonina",t:"T2",tm:"Tier 3",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Inna Babii",t:"T3",tm:"Tier 3",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Provides clear next steps"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Rachele Ong",t:"T2",tm:"Manila - Team Madz",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Madz",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Elly San Juan",t:"T3",tm:"Tier 3",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Cedrick Angeles",t:"T1",tm:"Manila - Team Madz",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jd Dela Llana",t:"T2",tm:"Manila - Team Madz",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-03",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Accurate resolves the issue"],w3:[]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-04",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-04",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite"],w2:["Accurate resolves the issue"],w3:[]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-04",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Ana Manuel",t:"T1",tm:"Manila - Team Edward",d:"2026-04-04",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-04",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Lindsey Schocke",t:"T3",tm:"Tier 3",d:"2026-04-04",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Albina Khonina",t:"T2",tm:"Tier 3",d:"2026-04-04",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Yana Martynenko",t:"T3",tm:"Tier 3",d:"2026-04-04",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-04",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Mariia Savych",t:"Onboarding",tm:"EU - Team Miia",d:"2026-04-04",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-04",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jd Dela Llana",t:"T2",tm:"Manila - Team Madz",d:"2026-04-05",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:["Others"],a3:[],w1:["Showed Strong Empathy","Ownership","Provides clear next steps"],w2:["Complete information provided","Asked the right questions"],w3:["Correctly tagged ticket","Followed Escalation Process"]},
+{a:"Yana Martynenko",t:"T3",tm:"Tier 3",d:"2026-04-05",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions","Ensure resolution"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Vlad Ausiyevich",t:"T3",tm:"Tier 3",d:"2026-04-05",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Others"],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite"],w2:["Complete information provided","Ensure resolution"],w3:["Follow-up as promised"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-05",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-05",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions","Ensure resolution"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-05",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-05",qa:48.0,s1:60.0,s2:0.0,s3:100.0,a1:["Missed empathy","Polite but generic","Others","Missed to acknowledge"],a2:["Incomplete Resolution","Incomplete or Lack of Probing","Missing Context"],a3:[],w1:["Ownership","Polite"],w2:["Accurate resolves the issue"],w3:["Correctly tagged ticket","Complete internal notes","Followed Escalation Process"]},
+{a:"Mariia Savych",t:"Onboarding",tm:"EU - Team Miia",d:"2026-04-05",qa:72.0,s1:60.0,s2:60.0,s3:100.0,a1:["Robotic Phrasing","Others"],a2:["Prolonged interaction"],a3:[],w1:["Ownership"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket","Follow-up as promised"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-05",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions","Ensure resolution"],w3:["Fully compliant","Correctly tagged ticket","Follow-up as promised"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-06",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-06",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Rachele Ong",t:"T2",tm:"Manila - Team Madz",d:"2026-04-06",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Redundant / Prior Context"],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Correctly tagged ticket","Complete internal notes"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-06",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cedrick Angeles",t:"T1",tm:"Manila - Team Madz",d:"2026-04-06",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-04-06",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-06",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-06",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-06",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mariia Savych",t:"Onboarding",tm:"EU - Team Miia",d:"2026-04-06",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-06",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mariia Savych",t:"Onboarding",tm:"EU - Team Miia",d:"2026-04-07",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite","Provides clear next steps"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Maria Golecka",t:"T2",tm:"EU - Team Miia",d:"2026-04-07",qa:72.0,s1:100.0,s2:60.0,s3:60.0,a1:[],a2:["Partial Context Missed"],a3:["Incomplete Documentation"],w1:["Showed Strong Empathy","Ownership","Polite"],w2:["Asked the right questions","Ensure resolution"],w3:["Fully compliant","Correctly tagged ticket","Complete internal notes","Follow-up as promised"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-07",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-07",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Correctly tagged ticket"]},
+{a:"Patricia Nicole Nepomuceno",t:"T1",tm:"Manila - Team Edward",d:"2026-04-07",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Incomplete or Lack of Probing"],a3:[],w1:["Polite","Proactive"],w2:[],w3:["Correctly tagged ticket"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-07",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Missing Context"],a3:[],w1:["Polite","Proactive"],w2:["Ensure resolution"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ana Manuel",t:"T1",tm:"Manila - Team Edward",d:"2026-04-07",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-07",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Prolonged interaction"],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Madz",d:"2026-04-07",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jd Dela Llana",t:"T2",tm:"Manila - Team Madz",d:"2026-04-07",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:[],w2:[],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Madz",d:"2026-04-07",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jd Dela Llana",t:"T2",tm:"Manila - Team Madz",d:"2026-04-07",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-07",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Prolonged interaction"],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Rachele Ong",t:"T2",tm:"Manila - Team Madz",d:"2026-04-07",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite","Provides clear next steps"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jd Dela Llana",t:"T2",tm:"Manila - Team Madz",d:"2026-04-07",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-08",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-08",qa:72.0,s1:100.0,s2:60.0,s3:60.0,a1:[],a2:[],a3:["Data Privacy Breach","Mis-escalated to T3"],w1:["Polite","Provides clear next steps"],w2:["Accurate resolves the issue"],w3:["Complete internal notes","Follow-up as promised"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-09",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Ana Manuel",t:"T1",tm:"Manila - Team Edward",d:"2026-04-09",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-09",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incomplete Documentation"],w1:["Showed Strong Empathy"],w2:["Accurate resolves the issue"],w3:[]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-09",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-09",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:["Prolonged interaction"],a3:[],w1:["Showed Strong Empathy"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Mariia Savych",t:"Onboarding",tm:"EU - Team Miia",d:"2026-04-09",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Jack Allan",t:"T1",tm:"US - Team Corey",d:"2026-04-09",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Missing Context"],a3:[],w1:["Polite"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-09",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership"],w2:["Accurate resolves the issue"],w3:[]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-04-09",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:["Repetitive Acknowledgement/Introduction"],a2:["Redundant / Prior Context"],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-09",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:[],w3:[]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-10",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Partial Context Missed","Missed offering next steps"],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Patricia Nicole Nepomuceno",t:"T1",tm:"Manila - Team Edward",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Lindsey Schocke",t:"T3",tm:"Tier 3",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Albina Khonina",t:"T2",tm:"Tier 3",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Inna Babii",t:"T3",tm:"Tier 3",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Yana Martynenko",t:"T3",tm:"Tier 3",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Elly San Juan",t:"T3",tm:"Tier 3",d:"2026-04-10",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Prolonged interaction"],a3:[],w1:["Polite"],w2:["Asked the right questions"],w3:["Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-10",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Partial Context Missed"],a3:[],w1:["Showed Strong Empathy","Polite","Provides clear next steps","Proactive"],w2:["Complete information provided","Ensure resolution"],w3:["Fully compliant"]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-10",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Incomplete or Lack of Probing"],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-10",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Partial Context Missed"],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Patricia Nicole Nepomuceno",t:"T1",tm:"Manila - Team Edward",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Jack Allan",t:"T1",tm:"US - Team Corey",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-10",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Missed offering next steps"],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Provides clear next steps"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-10",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Complete information provided"],w3:[]},
+{a:"Elly San Juan",t:"T3",tm:"Tier 3",d:"2026-04-12",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Madz",d:"2026-04-12",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-12",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Vlad Ausiyevich",t:"T3",tm:"Tier 3",d:"2026-04-13",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Rachele Ong",t:"T2",tm:"Manila - Team Madz",d:"2026-04-13",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Robotic Phrasing"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-13",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-13",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-13",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-13",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-13",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Maria Golecka",t:"T2",tm:"EU - Team Miia",d:"2026-04-13",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-04-13",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-13",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:[],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-13",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Inna Babii",t:"T3",tm:"Tier 3",d:"2026-04-13",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided","Ensure resolution"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Vlad Ausiyevich",t:"T3",tm:"Tier 3",d:"2026-04-13",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions","Ensure resolution"],w3:["Fully compliant","Complete internal notes"]},
+{a:"Cedrick Angeles",t:"T1",tm:"Manila - Team Madz",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mariia Savych",t:"Onboarding",tm:"EU - Team Miia",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cedrick Angeles",t:"T1",tm:"Manila - Team Madz",d:"2026-04-14",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Ana Manuel",t:"T1",tm:"Manila - Team Edward",d:"2026-04-14",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Patricia Nicole Nepomuceno",t:"T1",tm:"Manila - Team Edward",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-14",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Others"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jd Dela Llana",t:"T2",tm:"Manila - Team Madz",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-14",qa:76.0,s1:60.0,s2:100.0,s3:60.0,a1:["Others"],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-14",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-15",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Prolonged interaction","Missed to provide related information"],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket","Complete internal notes","Follow-up as promised","Followed Escalation Process"]},
+{a:"Adrienne Madrigal",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Johnabell Tampos",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-15",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions","Ensure resolution"],w3:["Fully compliant","Correctly tagged ticket","Complete internal notes","Followed Escalation Process"]},
+{a:"Johnabell Tampos",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Al Reenan Lodonia",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-15",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed empathy"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cedrick Angeles",t:"T1",tm:"Manila - Team Madz",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-15",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Incomplete or Lack of Probing","Prolonged interaction"],a3:[],w1:["Polite","Provides clear next steps"],w2:[],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-15",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Polite but generic","Others"],a2:[],a3:[],w1:["Polite"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Patricia Nicole Nepomuceno",t:"T1",tm:"Manila - Team Edward",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-15",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incomplete Documentation"],w1:["Showed Strong Empathy","Ownership","Polite"],w2:["Complete information provided","Asked the right questions","Ensure resolution"],w3:["Correctly tagged ticket"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Accurate resolves the issue"],w3:[]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-15",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed empathy"],a2:[],a3:[],w1:[],w2:["Accurate resolves the issue"],w3:[]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Ana Manuel",t:"T1",tm:"Manila - Team Edward",d:"2026-04-15",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-16",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:["Prolonged interaction"],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-16",qa:60.0,s1:100.0,s2:0.0,s3:100.0,a1:[],a2:["Others"],a3:[],w1:["Showed Strong Empathy","Ownership","Polite"],w2:[],w3:["Fully compliant"]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-16",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:[],w2:[],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cedrick Angeles",t:"T1",tm:"Manila - Team Madz",d:"2026-04-16",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Patricia Nicole Nepomuceno",t:"T1",tm:"Manila - Team Edward",d:"2026-04-16",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-16",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-16",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-16",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Others"],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jack Allan",t:"T1",tm:"US - Team Corey",d:"2026-04-16",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Missing Context"],a3:[],w1:["Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Inna Babii",t:"T3",tm:"Tier 3",d:"2026-04-16",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Vlad Ausiyevich",t:"T3",tm:"Tier 3",d:"2026-04-16",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-16",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:[],w2:[],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ana Manuel",t:"T1",tm:"Manila - Team Edward",d:"2026-04-16",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite"],w2:["Asked the right questions","Ensure resolution"],w3:["Follow-up as promised"]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-16",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:["Others"],a2:["Incomplete Resolution"],a3:[],w1:["Ownership","Polite"],w2:[],w3:["Fully compliant"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-16",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite","Provides clear next steps"],w2:["Asked the right questions"],w3:["Follow-up as promised"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-16",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant","Correctly tagged ticket","Follow-up as promised"]},
+{a:"Cedrick Angeles",t:"T1",tm:"Manila - Team Madz",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Elly San Juan",t:"T3",tm:"Tier 3",d:"2026-04-17",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Polite but generic"],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Mariia Savych",t:"Onboarding",tm:"EU - Team Miia",d:"2026-04-17",qa:72.0,s1:60.0,s2:60.0,s3:100.0,a1:["Missed empathy"],a2:["Incomplete or Lack of Probing"],a3:[],w1:["Polite"],w2:[],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Madz",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Provides clear next steps"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Rachele Ong",t:"T2",tm:"Manila - Team Madz",d:"2026-04-17",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Showed Strong Empathy","Proactive"],w2:["Complete information provided"],w3:["Followed Escalation Process"]},
+{a:"Inna Babii",t:"T3",tm:"Tier 3",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-17",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Robotic Phrasing"],a2:[],a3:[],w1:["Showed Strong Empathy","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-17",qa:84.0,s1:60.0,s2:60.0,s3:100.0,a1:["Repetitive Acknowledgement/Introduction"],a2:["Partial Context Missed","Incomplete or Lack of Probing"],a3:[],w1:["Showed Strong Empathy"],w2:[],w3:["Fully compliant"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-17",qa:70.0,s1:0.0,s2:100.0,s3:100.0,a1:["Lack of timely follow-up","Others"],a2:[],a3:[],w1:[],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Proactive"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Inna Babii",t:"T3",tm:"Tier 3",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Provides clear next steps"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Jd Dela Llana",t:"T2",tm:"Manila - Team Madz",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Albina Khonina",t:"T2",tm:"Tier 3",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Lindsey Schocke",t:"T3",tm:"Tier 3",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided","Ensure resolution"],w3:["Fully compliant"]},
+{a:"Albina Khonina",t:"T2",tm:"Tier 3",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Yana Martynenko",t:"T3",tm:"Tier 3",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Yana Martynenko",t:"T3",tm:"Tier 3",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Madz",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Elly San Juan",t:"T3",tm:"Tier 3",d:"2026-04-17",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed empathy"],a2:[],a3:[],w1:["Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-17",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Partial Context Missed"],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Jd Dela Llana",t:"T2",tm:"Manila - Team Madz",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Albina Khonina",t:"T2",tm:"Tier 3",d:"2026-04-17",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Elly San Juan",t:"T3",tm:"Tier 3",d:"2026-04-17",qa:76.0,s1:60.0,s2:100.0,s3:60.0,a1:["Others"],a2:[],a3:["Incorrect Tagging"],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Follow-up as promised"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Madz",d:"2026-04-17",qa:72.0,s1:60.0,s2:60.0,s3:100.0,a1:["Lack of timely follow-up"],a2:["Partial Context Missed"],a3:[],w1:["Polite","Provides clear next steps"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Rachele Ong",t:"T2",tm:"Manila - Team Madz",d:"2026-04-20",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Others"],a2:[],a3:[],w1:["Polite"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-20",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed empathy"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions","Ensure resolution"],w3:["Fully compliant","Correctly tagged ticket","Complete internal notes","Follow-up as promised","Followed Escalation Process"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Madz",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions","Ensure resolution"],w3:["Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-20",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ana Manuel",t:"T1",tm:"Manila - Team Edward",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:[],w2:[],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-20",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed empathy"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-20",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed empathy","Polite but generic"],a2:[],a3:[],w1:["Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions"],w3:["Correctly tagged ticket","Followed Escalation Process"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Madz",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Adrienne Madrigal",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Johnabell Tampos",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-20",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mariia Savych",t:"Onboarding",tm:"EU - Team Miia",d:"2026-04-20",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Adrienne Madrigal",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-20",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed empathy","Polite but generic","Others"],a2:[],a3:[],w1:["Ownership","Polite"],w2:["Accurate resolves the issue","Asked the right questions","Ensure resolution"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mariia Savych",t:"Onboarding",tm:"EU - Team Miia",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Maria Golecka",t:"T2",tm:"EU - Team Miia",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Yana Martynenko",t:"T3",tm:"Tier 3",d:"2026-04-20",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Missing Context","Repetitive Instructions","Prolonged interaction"],a3:[],w1:["Showed Strong Empathy","Ownership","Polite"],w2:[],w3:["Fully compliant"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-20",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite","Provides clear next steps"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-21",qa:72.0,s1:100.0,s2:60.0,s3:60.0,a1:[],a2:["Partial Context Missed","Incomplete or Lack of Probing"],a3:["Incorrect Tagging"],w1:["Ownership","Polite"],w2:["Accurate resolves the issue","Asked the right questions","Ensure resolution"],w3:[]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-04-21",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite"],w2:["Accurate resolves the issue","Asked the right questions","Ensure resolution"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Sherwin Mendoza",t:"T2",tm:"Manila - Team Edward",d:"2026-04-21",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed empathy"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Maria Golecka",t:"T2",tm:"EU - Team Miia",d:"2026-04-21",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Albina Khonina",t:"T2",tm:"Tier 3",d:"2026-04-21",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:["Missed empathy"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-21",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Inna Babii",t:"T3",tm:"Tier 3",d:"2026-04-21",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed empathy"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-21",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Missing Context"],a3:[],w1:["Polite","Proactive"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jd Dela Llana",t:"T2",tm:"Manila - Team Madz",d:"2026-04-21",qa:72.0,s1:60.0,s2:60.0,s3:100.0,a1:["Missed to acknowledge"],a2:["Did not read previous agent's info/troubleshooting steps"],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jd Dela Llana",t:"T2",tm:"Manila - Team Madz",d:"2026-04-21",qa:60.0,s1:60.0,s2:60.0,s3:60.0,a1:["Missed empathy"],a2:["Partial Context Missed","Didn't Review Prior Context"],a3:["Incomplete Documentation"],w1:["Ownership","Polite"],w2:["Asked the right questions"],w3:["Correctly tagged ticket"]},
+{a:"Vlad Ausiyevich",t:"T3",tm:"Tier 3",d:"2026-04-21",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Madz",d:"2026-04-21",qa:72.0,s1:60.0,s2:60.0,s3:100.0,a1:["Robotic Phrasing","Unclear Ownership"],a2:["Partial Context Missed"],a3:[],w1:["Polite"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-21",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:["Incorrect Tagging"],w1:["Showed Strong Empathy","Ownership","Polite"],w2:["Complete information provided"],w3:["Follow-up as promised"]},
+{a:"Jack Allan",t:"T1",tm:"US - Team Corey",d:"2026-04-21",qa:60.0,s1:60.0,s2:60.0,s3:60.0,a1:["Missed empathy","Robotic Phrasing","Others"],a2:["Partial Context Missed"],a3:["Incorrect Tagging"],w1:["Ownership","Polite"],w2:["Asked the right questions"],w3:["Follow-up as promised","Followed Escalation Process"]},
+{a:"Cedrick Angeles",t:"T1",tm:"Manila - Team Madz",d:"2026-04-21",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-22",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed to acknowledge"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-22",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Prolonged interaction"],a3:[],w1:["Polite","Proactive"],w2:["Ensure resolution"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Lindsey Schocke",t:"T3",tm:"Tier 3",d:"2026-04-22",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Others"],a2:[],a3:[],w1:["Polite"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-04-22",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Patricia Nicole Nepomuceno",t:"T1",tm:"Manila - Team Edward",d:"2026-04-22",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Incomplete Resolution"],a3:[],w1:["Polite","Proactive"],w2:[],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jack Allan",t:"T1",tm:"US - Team Corey",d:"2026-04-23",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-23",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Vlad Ausiyevich",t:"T3",tm:"Tier 3",d:"2026-04-23",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:["Polite but generic"],a2:[],a3:[],w1:["Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Followed Escalation Process"]},
+{a:"Yana Martynenko",t:"T3",tm:"Tier 3",d:"2026-04-23",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Rachele Ong",t:"T2",tm:"Manila - Team Madz",d:"2026-04-23",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Incomplete Resolution","Redundant / Prior Context"],a3:[],w1:["Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Madz",d:"2026-04-23",qa:72.0,s1:60.0,s2:60.0,s3:100.0,a1:["Unclear Ownership"],a2:["Incomplete Resolution","Partial Context Missed"],a3:[],w1:["Showed Strong Empathy","Ownership"],w2:["Asked the right questions"],w3:["Correctly tagged ticket"]},
+{a:"Elly San Juan",t:"T3",tm:"Tier 3",d:"2026-04-23",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Ensure resolution"],w3:["Fully compliant"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-23",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:[],w2:[],w3:[]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-23",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-04-23",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Prolonged interaction"],a3:[],w1:[],w2:[],w3:["Fully compliant"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-23",qa:88.0,s1:100.0,s2:100.0,s3:60.0,a1:[],a2:[],a3:[],w1:["Polite"],w2:[],w3:[]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-24",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Provides clear next steps"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-24",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-24",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Proactive"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-24",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite","Provides clear next steps","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Al Reenan Lodonia",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-24",qa:72.0,s1:60.0,s2:60.0,s3:100.0,a1:["Lack of timely follow-up"],a2:["Partial Context Missed","Missed to provide related information"],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-24",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-24",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-24",qa:72.0,s1:60.0,s2:60.0,s3:100.0,a1:["Unclear Ownership","Polite but generic"],a2:["Incomplete Resolution"],a3:[],w1:["Polite"],w2:[],w3:["Fully compliant"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Edward",d:"2026-04-24",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Provides clear next steps"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Vlad Ausiyevich",t:"T3",tm:"Tier 3",d:"2026-04-24",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-24",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Incomplete or Lack of Probing","Redundant / Prior Context"],a3:[],w1:["Showed Strong Empathy","Polite"],w2:[],w3:["Fully compliant"]},
+{a:"Adrienne Madrigal",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-25",qa:72.0,s1:60.0,s2:60.0,s3:100.0,a1:["Missed to acknowledge"],a2:["Others"],a3:[],w1:["Polite"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Johnabell Tampos",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-25",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Al Reenan Lodonia",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-25",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Elly San Juan",t:"T3",tm:"Tier 3",d:"2026-04-26",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Yana Martynenko",t:"T3",tm:"Tier 3",d:"2026-04-26",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Inna Babii",t:"T3",tm:"Tier 3",d:"2026-04-26",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Complete internal notes","Follow-up as promised","Followed Escalation Process"]},
+{a:"Lindsey Schocke",t:"T3",tm:"Tier 3",d:"2026-04-26",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-26",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions","Ensure resolution"],w3:["Fully compliant"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-26",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:["Others"],a3:[],w1:["Ownership","Proactive"],w2:["Accurate resolves the issue"],w3:["Fully compliant","Follow-up as promised"]},
+{a:"Jack Allan",t:"T1",tm:"US - Team Corey",d:"2026-04-26",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps"],w2:["Ensure resolution"],w3:["Follow-up as promised"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-26",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-27",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:[],w2:[],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mariia Savych",t:"T2",tm:"EU - Team Miia",d:"2026-04-27",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-27",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-27",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Missing Context"],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-27",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Incomplete or Lack of Probing"],a3:[],w1:["Polite","Proactive"],w2:["Accurate resolves the issue"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-04-27",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Robotic Phrasing"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Maria Golecka",t:"T2",tm:"EU - Team Miia",d:"2026-04-27",qa:76.0,s1:60.0,s2:100.0,s3:60.0,a1:["Others"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Jack Allan",t:"T1",tm:"US - Team Corey",d:"2026-04-27",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Incomplete Resolution"],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Anastasiya Zhuk",t:"T2",tm:"EU - Team Miia",d:"2026-04-27",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-27",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket","Complete internal notes","Follow-up as promised","Followed Escalation Process"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-27",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Rachele Ong",t:"T2",tm:"Manila - Team Madz",d:"2026-04-27",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Repetitive Acknowledgement/Introduction"],a2:["Others"],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Complete information provided","Ensure resolution"],w3:["Correctly tagged ticket","Follow-up as promised"]},
+{a:"Alvin Tambalo",t:"T1",tm:"Manila - Team Madz",d:"2026-04-28",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-04-28",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Johnabell Tampos",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-28",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-28",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Missed to provide related information"],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-28",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mariia Savych",t:"T2",tm:"EU - Team Miia",d:"2026-04-28",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-28",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-28",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Al Reenan Lodonia",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-28",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-28",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-29",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:[],w2:[],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-29",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Incomplete Resolution"],a3:[],w1:["Polite","Proactive"],w2:[],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Maria Golecka",t:"T2",tm:"EU - Team Miia",d:"2026-04-29",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-04-29",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Yana Martynenko",t:"T3",tm:"Tier 3",d:"2026-04-29",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Inna Babii",t:"T3",tm:"Tier 3",d:"2026-04-29",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Lindsey Schocke",t:"T3",tm:"Tier 3",d:"2026-04-29",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Patricia Nicole Nepomuceno",t:"T1",tm:"Manila - Team Edward",d:"2026-04-29",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jack Allan",t:"T1",tm:"US - Team Corey",d:"2026-04-29",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Koby Kobayashi",t:"T1",tm:"Manila - Team Edward",d:"2026-04-29",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed to acknowledge"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Alvin Tambalo",t:"T2",tm:"Manila - Team Edward",d:"2026-04-30",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-04-30",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Savannah Faulkner",t:"T2",tm:"US - Team Corey",d:"2026-04-30",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jd Dela Llana",t:"T1",tm:"Manila - Team Madz",d:"2026-04-30",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mariia Savych",t:"T2",tm:"EU - Team Miia",d:"2026-04-30",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-04-30",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-30",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-04-30",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Complete information provided"],w3:["Complete internal notes","Follow-up as promised"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-04-30",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Ownership","Polite","Provides clear next steps","Proactive"],w2:["Accurate resolves the issue","Complete information provided","Asked the right questions","Ensure resolution"],w3:["Fully compliant","Complete internal notes","Follow-up as promised"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-30",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Ownership","Polite","Provides clear next steps"],w2:["Accurate resolves the issue","Complete information provided"],w3:["Fully compliant"]},
+{a:"Al Reenan Lodonia",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-04-30",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Didn't Review Prior Context"],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-04-30",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mariia Savych",t:"T2",tm:"EU - Team Miia",d:"2026-04-30",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-04-30",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Missing Context"],a3:[],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Al Reenan Lodonia",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-05-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy"],w2:["Accurate resolves the issue","Asked the right questions"],w3:["Fully compliant"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-05-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-05-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Cramer Magsalansan",t:"T1",tm:"Manila - Team Edward",d:"2026-05-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Mark Reyes",t:"T1",tm:"EU - Team Miia",d:"2026-05-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Jay Masternak",t:"T2",tm:"EU - Team Miia",d:"2026-05-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Ella Bumatay",t:"T1",tm:"Manila - Team Madz",d:"2026-05-01",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Accurate resolves the issue"],w3:["Fully compliant"]},
+{a:"Grace Ann Bacolod",t:"T1",tm:"Manila - Team Edward",d:"2026-05-01",qa:84.0,s1:100.0,s2:60.0,s3:100.0,a1:[],a2:["Redundant / Prior Context"],a3:[],w1:["Showed Strong Empathy","Polite"],w2:["Complete information provided"],w3:["Fully compliant"]},
+{a:"Gladness Mtui",t:"T1",tm:"US - Team Corey",d:"2026-05-01",qa:60.0,s1:100.0,s2:0.0,s3:100.0,a1:[],a2:["Partial Context Missed","Missing Context","Prolonged interaction"],a3:[],w1:["Showed Strong Empathy","Polite","Proactive"],w2:[],w3:["Fully compliant"]},
+{a:"Adrienne Madrigal",t:"Onboarding",tm:"Manila - Team Edward",d:"2026-05-05",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Mariia Savych",t:"T2",tm:"EU - Team Miia",d:"2026-05-05",qa:72.0,s1:100.0,s2:60.0,s3:60.0,a1:[],a2:["Didn't Review Prior Context"],a3:["Incorrect Tagging"],w1:["Polite","Proactive"],w2:["Asked the right questions"],w3:["Fully compliant"]},
+{a:"Autumn Seiberg",t:"T1",tm:"US - Team Corey",d:"2026-05-05",qa:88.0,s1:60.0,s2:100.0,s3:100.0,a1:["Missed empathy"],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Vi Atilano",t:"T1",tm:"Manila - Team Edward",d:"2026-05-05",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Jonathon Gillis",t:"T1",tm:"US - Team Corey",d:"2026-05-05",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided"],w3:["Fully compliant","Correctly tagged ticket"]},
+{a:"Rachele Ong",t:"T2",tm:"Manila - Team Madz",d:"2026-05-05",qa:100.0,s1:100.0,s2:100.0,s3:100.0,a1:[],a2:[],a3:[],w1:["Polite","Proactive"],w2:["Complete information provided","Asked the right questions"],w3:["Fully compliant","Correctly tagged ticket"]}
 ];
 
+// ── Filter audits by current date range ──
+function getAuditsInRange() {
+  return AUDITS.filter(au => au.d >= drFrom && au.d <= drTo);
+}
+
+// ── Aggregate audits into per-agent objects (matching old AGENTS shape) ──
+function getFilteredAgents() {
+  const audits = getAuditsInRange();
+  const map = {};
+  audits.forEach(au => {
+    if (!map[au.a]) map[au.a] = {a:au.a, t:au.t, tm:au.tm, rows:[]};
+    map[au.a].rows.push(au);
+  });
+  return Object.values(map).map(ag => {
+    const rows = ag.rows;
+    const n = rows.length;
+    const qa  = Math.round(rows.reduce((s,r)=>s+r.qa,0)/n*10)/10;
+    const pr  = Math.round((rows.filter(r=>r.qa>=85).length/n)*1000)/10;
+    const s1  = Math.round(rows.reduce((s,r)=>s+r.s1,0)/n*10)/10;
+    const s2  = Math.round(rows.reduce((s,r)=>s+r.s2,0)/n*10)/10;
+    const s3  = Math.round(rows.reduce((s,r)=>s+r.s3,0)/n*10)/10;
+    // top AFI tags per section
+    function topTags(field, topN) {
+      const freq = {};
+      rows.forEach(r => r[field].forEach(f => { freq[f]=(freq[f]||0)+1; }));
+      return Object.entries(freq).sort((a,b)=>b[1]-a[1]).slice(0,topN).map(e=>e[0]);
+    }
+    return {
+      a:ag.a, t:ag.t, tm:ag.tm, n, qa, pr, s1, s2, s3,
+      afis:{s1:topTags('a1',4), s2:topTags('a2',4), s3:topTags('a3',4)},
+      www:{s1:topTags('w1',5), s2:topTags('w2',5), s3:topTags('w3',5)},
+    };
+  });
+}
+
+// ── Aggregate tag frequencies per section across all filtered audits ──
+function getTagFreqs() {
+  const audits = getAuditsInRange();
+  const freq = {a1:{},a2:{},a3:{},w1:{},w2:{},w3:{}};
+  audits.forEach(au => {
+    ['a1','a2','a3','w1','w2','w3'].forEach(k => {
+      au[k].forEach(tag => { freq[k][tag]=(freq[k][tag]||0)+1; });
+    });
+  });
+  function sorted(obj, n) {
+    return Object.entries(obj).sort((a,b)=>b[1]-a[1]).slice(0,n).map(([tag,count])=>({tag,count}));
+  }
+  return {
+    s1_afi: sorted(freq.a1,8), s2_afi: sorted(freq.a2,8), s3_afi: sorted(freq.a3,6),
+    s1_www: sorted(freq.w1,8), s2_www: sorted(freq.w2,8), s3_www: sorted(freq.w3,6),
+    www_all: sorted({...Object.fromEntries(
+      [...Object.entries(freq.w1),...Object.entries(freq.w2),...Object.entries(freq.w3)]
+        .reduce((m,[k,v])=>{m.set(k,(m.get(k)||0)+v);return m;},new Map())
+    ),},14),
+  };
+}
+
+// ── Update KPI strip and period labels after range change ──
+function updatePeriodLabels() {
+  const label = drFrom === drTo ? drFrom : drFrom + ' – ' + drTo;
+  document.querySelectorAll('.dr-period-label').forEach(el => el.textContent = label);
+  // recompute summary KPIs
+  const audits = getAuditsInRange();
+  const agents = getFilteredAgents();
+  if (!audits.length) return;
+  const avg = (audits.reduce((s,r)=>s+r.qa,0)/audits.length).toFixed(1);
+  const vsGoal = (parseFloat(avg)-85).toFixed(1);
+  const passing = agents.filter(a=>a.qa>=85).length;
+  const el = id => document.getElementById(id);
+  if(el('kpi-avg'))    el('kpi-avg').textContent    = avg+'%';
+  if(el('kpi-audits')) el('kpi-audits').textContent = audits.length;
+  if(el('kpi-vsgoal')) el('kpi-vsgoal').textContent = '+'+vsGoal;
+  if(el('kpi-passing'))el('kpi-passing').textContent= passing+' / '+agents.length+' agents passing';
+  if(el('strip-avg'))  el('strip-avg').textContent  = avg+'%';
+  if(el('strip-audits'))el('strip-audits').textContent = audits.length;
+  if(el('strip-vsgoal'))el('strip-vsgoal').textContent = '+'+vsGoal;
+  if(el('strip-period'))el('strip-period').textContent = label;
+  if(el('dr-audit-count')) {
+    el('dr-audit-count').textContent = audits.length + ' audits · ' + agents.length + ' agents';
+  }
+}
+
+window.applyDateRange = function() {
+  const f = document.getElementById('dr-from').value;
+  const t = document.getElementById('dr-to').value;
+  if (!f || !t || f > t) return;
+  drFrom = f; drTo = t;
+  updatePeriodLabels();
+  renderDash();
+  renderAFI();
+  renderWWW();
+  renderInsightsCharts();
+  renderAfiWww();
+  const cfg = TIER_CONFIGS.find(c => c.key === activeTier);
+  if (cfg) buildTierContent(cfg);
+};
+
+// Quick preset buttons
+window.setPreset = function(from, to, btn) {
+  document.getElementById('dr-from').value = from;
+  document.getElementById('dr-to').value   = to;
+  document.querySelectorAll('.dr-preset').forEach(b=>b.classList.remove('on'));
+  if(btn) btn.classList.add('on');
+  window.applyDateRange();
+};
+
+
+
+
+
+
+
 const TEAM_ORDER = ["Manila - Team Edward","EU - Team Miia","Manila - Team Madz","Tier 3","US - Team Corey"];
+
+
+
+function renderAfiBar(item, max, colorClass) {
+  const pct = Math.round(item.count / max * 100);
+  return `<div class="freq-bar-row">
+    <span class="freq-lbl">${item.tag}</span>
+    <div class="freq-track"><div class="freq-fill ${colorClass}" style="width:${pct}%"></div></div>
+    <span class="freq-cnt">${item.count}</span>
+  </div>`;
+}
+
+function renderAfiWww() {
+  const freq = getTagFreqs();
+  const el = (id) => document.getElementById(id);
+  const noData = '<span style="font-size:12px;color:var(--text-3)">No AFIs recorded this period</span>';
+  function bars(items, fillClass) {
+    if (!items.length) return noData;
+    const mx = items[0].count;
+    return items.map(x=>renderAfiBar(x,mx,fillClass)).join('');
+  }
+  if (el('afi-s1-bars')) el('afi-s1-bars').innerHTML = bars(freq.s1_afi,'fill-red');
+  if (el('afi-s2-bars')) el('afi-s2-bars').innerHTML = bars(freq.s2_afi,'fill-amber');
+  if (el('afi-s3-bars')) el('afi-s3-bars').innerHTML = bars(freq.s3_afi,'fill-coral');
+  if (el('www-all-bars')) el('www-all-bars').innerHTML = bars(freq.www_all,'fill-teal');
+  const label = drFrom === drTo ? drFrom : drFrom + ' – ' + drTo;
+  document.querySelectorAll('.afi-www-period').forEach(e => e.textContent = label);
+}
+
 
 function sc(v) {
   if (v >= 98) return 'sc-hi';
@@ -644,8 +1086,9 @@ function fmt(v) { return v.toFixed(1) + '%'; }
 // ── DASHBOARD ──
 function renderDash() {
   const tier = document.getElementById('dash-tier').value;
+  const team = document.getElementById('dash-team').value;
   const sort = document.getElementById('dash-sort').value;
-  let data = AGENTS.filter(a => !tier || a.t === tier);
+  let data = getFilteredAgents().filter(a => (!tier || a.t === tier) && (!team || a.tm === team));
 
   if (sort === 'qa-desc') data.sort((a,b) => b.qa - a.qa);
   else if (sort === 'qa-asc') data.sort((a,b) => a.qa - b.qa);
@@ -696,8 +1139,9 @@ let wwwSelected = new Set(['__ALL__']);
 
 function buildChips(containerId, selectedSet, renderFn) {
   const el = document.getElementById(containerId);
+  const allAgents = [...new Map(AUDITS.map(a => [a.a, a])).values()].sort((a,b) => a.a.localeCompare(b.a));
   const allChip = `<span class="chip chip-all ${selectedSet.has('__ALL__') ? 'on' : ''}" onclick="toggleChip('${containerId}','__ALL__',this,${renderFn.name})">All</span>`;
-  const agentChips = AGENTS.map(a =>
+  const agentChips = allAgents.map(a =>
     `<span class="chip ${selectedSet.has(a.a) && !selectedSet.has('__ALL__') ? 'on' : ''}" onclick="toggleChip('${containerId}','${a.a.replace(/'/g,"\\'")}',this,${renderFn.name})">${a.a.split(' ')[0]}</span>`
   ).join('');
   el.innerHTML = allChip + agentChips;
@@ -719,7 +1163,8 @@ window.toggleChip = function(containerId, name, el, renderFn) {
 
 // ── AFI TABLE ──
 function renderAFI() {
-  const data = afiSelected.has('__ALL__') ? AGENTS : AGENTS.filter(a => afiSelected.has(a.a));
+  const all = getFilteredAgents();
+  const data = afiSelected.has('__ALL__') ? all : all.filter(a => afiSelected.has(a.a));
   const hasAfi = data.filter(a => a.afis.s1.length || a.afis.s2.length || a.afis.s3.length);
   let html = '';
   hasAfi.forEach(a => {
@@ -760,7 +1205,8 @@ function renderAFI() {
 
 // ── WWW TABLE ──
 function renderWWW() {
-  const data = wwwSelected.has('__ALL__') ? AGENTS : AGENTS.filter(a => wwwSelected.has(a.a));
+  const all = getFilteredAgents();
+  const data = wwwSelected.has('__ALL__') ? all : all.filter(a => wwwSelected.has(a.a));
   let html = '';
   data.forEach(a => {
     const s1 = a.www.s1.length ? a.www.s1.map(f=>`<span class="www-tag">${f}</span>`).join('') : '<span class="na-cell">—</span>';
@@ -780,39 +1226,38 @@ buildChips('afi-chips', afiSelected, renderAFI);
 buildChips('www-chips', wwwSelected, renderWWW);
 renderAFI();
 renderWWW();
+renderInsightsCharts();
 
-// ── INSIGHTS CHARTS ──
-(function buildInsightCharts() {
-  // Top AFIs
-  const afiFreq = {};
-  AGENTS.forEach(a => {
-    [...a.afis.s1,...a.afis.s2,...a.afis.s3].forEach(f => { afiFreq[f] = (afiFreq[f]||0)+1; });
-  });
-  const topAfis = Object.entries(afiFreq).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  const maxA = topAfis[0]?.[1] || 1;
-  document.getElementById('top-afi-chart').innerHTML = topAfis.map(([tag,cnt]) =>
-    `<div class="freq-item">
-      <span class="freq-label">${tag}</span>
-      <div class="freq-bar-bg"><div class="freq-bar-fill red" style="width:${(cnt/maxA*100).toFixed(0)}%"></div></div>
-      <span class="freq-count">${cnt}</span>
-    </div>`
-  ).join('');
 
-  // Top WWW
-  const wwwFreq = {};
-  AGENTS.forEach(a => {
-    [...a.www.s1,...a.www.s2,...a.www.s3].forEach(f => { wwwFreq[f] = (wwwFreq[f]||0)+1; });
-  });
-  const topWww = Object.entries(wwwFreq).sort((a,b)=>b[1]-a[1]).slice(0,10);
-  const maxW = topWww[0]?.[1] || 1;
-  document.getElementById('top-www-chart').innerHTML = topWww.map(([tag,cnt]) =>
-    `<div class="freq-item">
-      <span class="freq-label">${tag}</span>
-      <div class="freq-bar-bg"><div class="freq-bar-fill green" style="width:${(cnt/maxW*100).toFixed(0)}%"></div></div>
-      <span class="freq-count">${cnt}</span>
-    </div>`
-  ).join('');
-})();
+
+
+
+// ── INSIGHTS CHARTS (dynamic, date-filtered) ──
+function renderInsightsCharts() {
+  const freq = getTagFreqs();
+  const audits = getAuditsInRange();
+  const label = drFrom === drTo ? drFrom : drFrom + ' – ' + drTo;
+  const el = id => document.getElementById(id);
+  const noData = '<span style="color:var(--text-3);font-size:12px">No AFIs recorded this period</span>';
+
+  if (el('insights-period-label')) el('insights-period-label').textContent = label + ' · ' + audits.length + ' audits';
+
+  function bar(items, fillClass) {
+    if (!items.length) return noData;
+    const mx = items[0].count;
+    return items.map(x => {
+      const pct = Math.round(x.count/mx*100);
+      return `<div class="freq-item"><span class="freq-label">${x.tag}</span><div class="freq-bar-bg"><div class="freq-bar-fill ${fillClass}" style="width:${pct}%"></div></div><span class="freq-count">${x.count}</span></div>`;
+    }).join('');
+  }
+
+  if (el('ins-afi-s1')) el('ins-afi-s1').innerHTML = bar(freq.s1_afi,'red');
+  if (el('ins-afi-s2')) el('ins-afi-s2').innerHTML = bar(freq.s2_afi,'red');
+  if (el('ins-afi-s3')) el('ins-afi-s3').innerHTML = bar(freq.s3_afi,'red');
+  if (el('ins-www-s1')) el('ins-www-s1').innerHTML = bar(freq.s1_www,'green');
+  if (el('ins-www-s2')) el('ins-www-s2').innerHTML = bar(freq.s2_www,'green');
+  if (el('ins-www-s3')) el('ins-www-s3').innerHTML = bar(freq.s3_www,'green');
+}
 
 // ── TIER VIEW (single tab, filter by tier) ──
 const TIER_CONFIGS = [
@@ -872,7 +1317,7 @@ const TIER_CONFIGS = [
 let activeTier = 'T1';
 
 function buildTierContent(cfg) {
-  const agents = AGENTS.filter(a => a.t === cfg.key);
+  const agents = getFilteredAgents().filter(a => a.t === cfg.key);
   const sorted = [...agents].sort((a,b) => b.qa - a.qa);
 
   const avgQa = (agents.reduce((s,a)=>s+a.qa,0)/agents.length).toFixed(1);
@@ -993,6 +1438,8 @@ window.showTab = function(name, btn) {
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('on'));
   document.getElementById('pg-' + name).classList.add('on');
   btn.classList.add('on');
+  if (name === 'afi-www') renderAfiWww();
+  if (name === 'insights') renderInsightsCharts();
 };
 </script>
 <div style="text-align:center;padding:24px 32px;border-top:1px solid var(--border);margin-top:8px;">
