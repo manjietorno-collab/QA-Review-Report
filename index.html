@@ -33,9 +33,14 @@
   --t2: #7c3aed; --t2-bg: #ede9fe;
   --t3: #09825d; --t3-bg: #e6f5f0;
   --ob: #b45309; --ob-bg: #fef3c7;
+  --purple: #7048e8; --purple-bg: #ede9fe;
+  --teal: #0c8599;   --teal-bg: #e3fafc;
+  --forest: #065c42;
+  --gray: #374151;
   --r: 6px; --r-lg: 10px;
   --mono: 'JetBrains Mono', monospace;
   --sans: 'Inter', -apple-system, sans-serif;
+  --shadow: 0 1px 3px rgba(0,0,0,.06);
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 body { font-family: var(--sans); background: var(--bg); color: var(--text); font-size: 13px; line-height: 1.5; }
@@ -190,7 +195,7 @@ select:focus, input[type=text]:focus { border-color: var(--accent-2); }
 .fill-teal  { background:#09825d; }
 .freq-cnt { min-width:28px; text-align:right; font-weight:600; color:var(--gray); font-size:11px; }
 .dr-preset { padding:3px 10px; border-radius:12px; border:1px solid var(--border); background:transparent; cursor:pointer; font-size:11px; font-weight:500; color:var(--text-2); }
-.dr-preset.on { background:var(--forest); color:#fff; border-color:var(--forest); }
+.dr-preset.on { background:var(--accent-dark); color:#fff; border-color:var(--accent-dark); }
 @media (max-width: 800px) {
   .tier-kpis { grid-template-columns: repeat(2,1fr); }
   .tier-two-col { grid-template-columns: 1fr; }
@@ -223,8 +228,7 @@ select:focus, input[type=text]:focus { border-color: var(--accent-2); }
 <!-- ═══ TABS ═══ -->
 <div class="tab-bar">
   <button class="tab-btn on" onclick="showTab('dashboard',this)">Dashboard</button>
-  <button class="tab-btn" onclick="showTab('afi',this)">AFIs by Agent</button>
-  <button class="tab-btn" onclick="showTab('www',this)">What Went Well</button>
+  <button class="tab-btn" onclick="showTab('hub',this)">Agent's Hub</button>
   <button class="tab-btn" onclick="showTab('insights',this)">Insights</button>
   <button class="tab-btn" onclick="showTab('afi-www',this)">Top AFIs &amp; WWW</button>
   <button class="tab-btn" onclick="showTab('tier-view',this)" style="border-left:1px solid var(--border);margin-left:8px;padding-left:20px">Tier View</button>
@@ -330,54 +334,104 @@ select:focus, input[type=text]:focus { border-color: var(--accent-2); }
 <!-- ═══════════════════════════════════════════════
      TAB 2 — AFIs
 ════════════════════════════════════════════════ -->
-<div id="pg-afi" class="pg">
+<div id="pg-hub" class="pg">
 
-  <div class="ctrl-row">
-    <label>Select agents:</label>
-    <div class="agent-chips" id="afi-chips"></div>
+  <!-- Agent selector + meta -->
+  <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap;">
+    <label style="font-size:11px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;white-space:nowrap;">Agent</label>
+    <select id="hub-agent-select" onchange="renderHub()"
+      style="font-size:13px;font-weight:500;padding:7px 12px;border:1px solid var(--border);border-radius:var(--r);background:var(--surface);color:var(--text);min-width:220px;cursor:pointer;">
+      <option value="">— Select an agent —</option>
+    </select>
+    <span id="hub-agent-meta" style="font-size:12px;color:var(--text-3);"></span>
   </div>
 
-  <div class="tbl-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Agent</th>
-          <th>Tier</th>
-          <th>Team</th>
-          <th>S1 — Empathy & Communication</th>
-          <th>S2 — Problem Solving</th>
-          <th>S3 — Process Compliance</th>
-        </tr>
-      </thead>
-      <tbody id="afi-tbody"></tbody>
-    </table>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════════════════
-     TAB 3 — WWW
-════════════════════════════════════════════════ -->
-<div id="pg-www" class="pg">
-
-  <div class="ctrl-row">
-    <label>Select agents:</label>
-    <div class="agent-chips" id="www-chips"></div>
+  <!-- Agent scorecard — hidden until agent selected -->
+  <div id="hub-empty" style="text-align:center;padding:64px 32px;color:var(--text-3);">
+    <div style="font-size:32px;margin-bottom:12px;">👤</div>
+    <div style="font-size:14px;font-weight:500;margin-bottom:6px;">Select an agent to view their profile</div>
+    <div style="font-size:12px;">Scores, AFIs, WWWs and audit history for the selected date range</div>
   </div>
 
-  <div class="tbl-wrap">
-    <table>
-      <thead>
-        <tr>
-          <th>Agent</th>
-          <th>Tier</th>
-          <th>Team</th>
-          <th>S1 — Empathy & Communication</th>
-          <th>S2 — Problem Solving</th>
-          <th>S3 — Process Compliance</th>
-        </tr>
-      </thead>
-      <tbody id="www-tbody"></tbody>
-    </table>
+  <div id="hub-content" style="display:none;">
+
+    <!-- KPI row -->
+    <div id="hub-kpis" style="display:grid;grid-template-columns:repeat(6,1fr);gap:12px;margin-bottom:20px;"></div>
+
+    <!-- Score trend + section scores -->
+    <div style="display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:16px;">
+
+      <!-- Audit timeline -->
+      <div class="ins-card">
+        <h3 style="font-size:12px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;">Audit Timeline</h3>
+        <div id="hub-timeline" style="display:flex;align-items:flex-end;gap:4px;height:80px;"></div>
+        <div id="hub-timeline-dates" style="display:flex;gap:4px;margin-top:4px;"></div>
+      </div>
+
+      <!-- Section score bars -->
+      <div class="ins-card">
+        <h3 style="font-size:12px;font-weight:600;color:var(--text-2);text-transform:uppercase;letter-spacing:.5px;margin-bottom:14px;">Section Averages</h3>
+        <div id="hub-section-bars"></div>
+      </div>
+
+    </div>
+
+    <!-- AFIs + WWW side by side -->
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px;">
+
+      <div class="ins-card">
+        <h3><span class="dot red" style="width:8px;height:8px;border-radius:50%;background:var(--red);display:inline-block;margin-right:8px;"></span>Areas for Improvement (AFIs)</h3>
+        <div style="margin-bottom:14px;">
+          <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">S1 — Empathy &amp; Communication</div>
+          <div id="hub-afi-s1"></div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">S2 — Problem Solving &amp; Accuracy</div>
+          <div id="hub-afi-s2"></div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">S3 — Process Compliance</div>
+          <div id="hub-afi-s3"></div>
+        </div>
+      </div>
+
+      <div class="ins-card">
+        <h3><span class="dot green" style="width:8px;height:8px;border-radius:50%;background:var(--green);display:inline-block;margin-right:8px;"></span>What Went Well (WWW)</h3>
+        <div style="margin-bottom:14px;">
+          <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">S1 — Empathy &amp; Communication</div>
+          <div id="hub-www-s1"></div>
+        </div>
+        <div style="margin-bottom:14px;">
+          <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">S2 — Problem Solving &amp; Accuracy</div>
+          <div id="hub-www-s2"></div>
+        </div>
+        <div>
+          <div style="font-size:10px;font-weight:600;color:var(--text-3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:6px;">S3 — Process Compliance</div>
+          <div id="hub-www-s3"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Audit log table -->
+    <div class="ins-card" style="padding:0;overflow:hidden;">
+      <div style="padding:14px 18px;border-bottom:1px solid var(--border);font-size:12px;font-weight:600;color:var(--text-2);">Audit Log</div>
+      <div class="tbl-wrap" style="border:none;border-radius:0;max-height:320px;">
+        <table>
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>QA Score</th>
+              <th>S1</th><th>S2</th><th>S3</th>
+              <th>AFIs</th>
+              <th>WWW</th>
+            </tr>
+          </thead>
+          <tbody id="hub-log-tbody"></tbody>
+        </table>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -493,15 +547,15 @@ select:focus, input[type=text]:focus { border-color: var(--accent-2); }
         <p style="font-size:12px;color:var(--muted);margin:0 0 16px">Across all agents · <span class="afi-www-period">April 1 – May 5, 2026</span></p>
 
         <div style="margin-bottom:24px">
-          <div style="font-size:11px;font-weight:600;color:var(--forest);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">S3 — Process Compliance</div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent-dark);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">S3 — Process Compliance</div>
           <div id="afi-s3-bars"></div>
         </div>
         <div style="margin-bottom:24px">
-          <div style="font-size:11px;font-weight:600;color:var(--forest);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">S1 — Empathy &amp; Communication</div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent-dark);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">S1 — Empathy &amp; Communication</div>
           <div id="afi-s1-bars"></div>
         </div>
         <div>
-          <div style="font-size:11px;font-weight:600;color:var(--forest);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">S2 — Problem Solving &amp; Accuracy</div>
+          <div style="font-size:11px;font-weight:600;color:var(--accent-dark);text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px">S2 — Problem Solving &amp; Accuracy</div>
           <div id="afi-s2-bars"></div>
         </div>
       </div>
@@ -1021,9 +1075,10 @@ window.applyDateRange = function() {
   drFrom = f; drTo = t;
   updatePeriodLabels();
   renderDash();
-  renderAFI();
-  renderWWW();
   renderInsightsCharts();
+  // re-render hub if an agent is selected
+  if (document.getElementById('hub-agent-select') && document.getElementById('hub-agent-select').value) renderHub();
+initHubDropdown();
   renderAfiWww();
   const cfg = TIER_CONFIGS.find(c => c.key === activeTier);
   if (cfg) buildTierContent(cfg);
@@ -1131,106 +1186,154 @@ function renderDash() {
   });
   document.getElementById('dash-tbody').innerHTML = html || '<tr class="empty-row"><td colspan="10">No data matches filter.</td></tr>';
 }
-renderDash();
+// renderDash called via initAll
 
 // ── AGENT CHIPS ──
-let afiSelected = new Set(['__ALL__']);
-let wwwSelected = new Set(['__ALL__']);
+// ── AGENT'S HUB ──
 
-function buildChips(containerId, selectedSet, renderFn) {
-  const el = document.getElementById(containerId);
-  const allAgents = [...new Map(AUDITS.map(a => [a.a, a])).values()].sort((a,b) => a.a.localeCompare(b.a));
-  const allChip = `<span class="chip chip-all ${selectedSet.has('__ALL__') ? 'on' : ''}" onclick="toggleChip('${containerId}','__ALL__',this,${renderFn.name})">All</span>`;
-  const agentChips = allAgents.map(a =>
-    `<span class="chip ${selectedSet.has(a.a) && !selectedSet.has('__ALL__') ? 'on' : ''}" onclick="toggleChip('${containerId}','${a.a.replace(/'/g,"\\'")}',this,${renderFn.name})">${a.a.split(' ')[0]}</span>`
-  ).join('');
-  el.innerHTML = allChip + agentChips;
-}
-
-window.toggleChip = function(containerId, name, el, renderFn) {
-  const isAfi = containerId === 'afi-chips';
-  const sel = isAfi ? afiSelected : wwwSelected;
-  if (name === '__ALL__') {
-    sel.clear(); sel.add('__ALL__');
-  } else {
-    sel.delete('__ALL__');
-    if (sel.has(name)) { sel.delete(name); if (sel.size === 0) sel.add('__ALL__'); }
-    else sel.add(name);
-  }
-  buildChips(containerId, sel, renderFn);
-  renderFn();
-};
-
-// ── AFI TABLE ──
-function renderAFI() {
-  const all = getFilteredAgents();
-  const data = afiSelected.has('__ALL__') ? all : all.filter(a => afiSelected.has(a.a));
-  const hasAfi = data.filter(a => a.afis.s1.length || a.afis.s2.length || a.afis.s3.length);
-  let html = '';
-  hasAfi.forEach(a => {
-    const s1 = a.afis.s1.length ? a.afis.s1.map(f=>`<span class="afi-tag">${f}</span>`).join('') : '<span class="na-cell">None</span>';
-    const s2 = a.afis.s2.length ? a.afis.s2.map(f=>`<span class="afi-tag">${f}</span>`).join('') : '<span class="na-cell">None</span>';
-    const s3 = a.afis.s3.length ? a.afis.s3.map(f=>`<span class="afi-tag">${f}</span>`).join('') : '<span class="na-cell">None</span>';
-    html += `<tr>
-      <td style="font-weight:500;white-space:nowrap">${a.a}</td>
-      <td><span class="pill p${a.t}">${a.t}</span></td>
-      <td style="color:var(--text-2);white-space:nowrap">${a.tm.replace('Manila - ','').replace('EU - ','EU – ').replace('US - ','US – ')}</td>
-      <td>${s1}</td><td>${s2}</td><td>${s3}</td>
-    </tr>`;
+// Populate agent dropdown from AUDITS
+function initHubDropdown() {
+  const sel = document.getElementById('hub-agent-select');
+  if (!sel) return;
+  const agents = [...new Set(AUDITS.map(a => a.a))].sort();
+  agents.forEach(name => {
+    const opt = document.createElement('option');
+    opt.value = name; opt.textContent = name;
+    sel.appendChild(opt);
   });
-  if (!html) {
-    // show agents with no AFIs in lighter rows
-    data.forEach(a => {
-      html += `<tr>
-        <td style="font-weight:500">${a.a}</td>
-        <td><span class="pill p${a.t}">${a.t}</span></td>
-        <td style="color:var(--text-2)">${a.tm.replace('Manila - ','').replace('EU - ','EU – ').replace('US - ','US – ')}</td>
-        <td><span class="na-cell">None</span></td><td><span class="na-cell">None</span></td><td><span class="na-cell">None</span></td>
-      </tr>`;
-    });
-  } else {
-    // also append the no-AFI agents
-    const noAfi = data.filter(a => !a.afis.s1.length && !a.afis.s2.length && !a.afis.s3.length);
-    noAfi.forEach(a => {
-      html += `<tr>
-        <td style="font-weight:500">${a.a}</td>
-        <td><span class="pill p${a.t}">${a.t}</span></td>
-        <td style="color:var(--text-2)">${a.tm.replace('Manila - ','').replace('EU - ','EU – ').replace('US - ','US – ')}</td>
-        <td><span class="na-cell">None</span></td><td><span class="na-cell">None</span></td><td><span class="na-cell">None</span></td>
-      </tr>`;
-    });
+}
+
+function hubTag(text, isAfi) {
+  const bg = isAfi ? 'var(--red-bg)' : 'var(--green-bg)';
+  const col = isAfi ? 'var(--red)' : 'var(--green)';
+  return `<span style="display:inline-block;background:${bg};color:${col};font-size:11px;padding:2px 8px;border-radius:20px;margin:2px 3px 2px 0;">${text}</span>`;
+}
+
+function hubNoTags(isAfi) {
+  return `<span style="font-size:11px;color:var(--text-3);font-style:italic;">None recorded</span>`;
+}
+
+function renderHub() {
+  const agentName = document.getElementById('hub-agent-select').value;
+  const empty = document.getElementById('hub-empty');
+  const hubContent = document.getElementById('hub-content');
+
+  if (!agentName) {
+    empty.style.display = 'block';
+    hubContent.style.display = 'none';
+    document.getElementById('hub-agent-meta').textContent = '';
+    return;
   }
-  document.getElementById('afi-tbody').innerHTML = html || '<tr class="empty-row"><td colspan="6">No agents selected.</td></tr>';
-}
 
-// ── WWW TABLE ──
-function renderWWW() {
-  const all = getFilteredAgents();
-  const data = wwwSelected.has('__ALL__') ? all : all.filter(a => wwwSelected.has(a.a));
-  let html = '';
-  data.forEach(a => {
-    const s1 = a.www.s1.length ? a.www.s1.map(f=>`<span class="www-tag">${f}</span>`).join('') : '<span class="na-cell">—</span>';
-    const s2 = a.www.s2.length ? a.www.s2.map(f=>`<span class="www-tag">${f}</span>`).join('') : '<span class="na-cell">—</span>';
-    const s3 = a.www.s3.length ? a.www.s3.map(f=>`<span class="www-tag">${f}</span>`).join('') : '<span class="na-cell">—</span>';
-    html += `<tr>
-      <td style="font-weight:500;white-space:nowrap">${a.a}</td>
-      <td><span class="pill p${a.t}">${a.t}</span></td>
-      <td style="color:var(--text-2);white-space:nowrap">${a.tm.replace('Manila - ','').replace('EU - ','EU – ').replace('US - ','US – ')}</td>
-      <td>${s1}</td><td>${s2}</td><td>${s3}</td>
+  const audits = getAuditsInRange().filter(a => a.a === agentName);
+  if (!audits.length) {
+    empty.style.display = 'block';
+    hubContent.style.display = 'none';
+    document.getElementById('hub-agent-meta').textContent = 'No audits in selected date range';
+    return;
+  }
+
+  empty.style.display = 'none';
+  hubContent.style.display = 'block';
+
+  const tier = audits[0].t;
+  const team = audits[0].tm.replace('Manila - ','Manila – ').replace('EU - ','EU – ').replace('US - ','US – ');
+  const n = audits.length;
+  const qaAvg = (audits.reduce((s,r)=>s+r.qa,0)/n).toFixed(1);
+  const pr = Math.round(audits.filter(r=>r.qa>=85).length/n*100);
+  const s1Avg = (audits.reduce((s,r)=>s+r.s1,0)/n).toFixed(1);
+  const s2Avg = (audits.reduce((s,r)=>s+r.s2,0)/n).toFixed(1);
+  const s3Avg = (audits.reduce((s,r)=>s+r.s3,0)/n).toFixed(1);
+
+  document.getElementById('hub-agent-meta').innerHTML =
+    `<span class="pill p${tier}" style="margin-right:6px;">${tier}</span>${team}`;
+
+  // KPI cards
+  function kpiCard(val, lbl, color) {
+    return `<div class="stile" style="border-top:3px solid ${color};padding:14px 16px;">
+      <div class="stile-val" style="font-size:22px;color:${color};">${val}</div>
+      <div class="stile-lbl" style="margin-top:4px;">${lbl}</div>
+    </div>`;
+  }
+  document.getElementById('hub-kpis').innerHTML =
+    kpiCard(qaAvg+'%','QA Avg','var(--green)') +
+    kpiCard(n,'Audits','var(--blue)') +
+    kpiCard(pr+'%','Pass Rate', pr>=85?'var(--green)':pr>=70?'var(--amber)':'var(--red)') +
+    kpiCard(s1Avg+'%','S1 Empathy','var(--purple)') +
+    kpiCard(s2Avg+'%','S2 Problem Solving','var(--teal)') +
+    kpiCard(s3Avg+'%','S3 Compliance','var(--amber)');
+
+  // Timeline bars
+  const sorted = [...audits].sort((a,b)=>a.d.localeCompare(b.d));
+  const maxQa = Math.max(...sorted.map(r=>r.qa));
+  const tlHtml = sorted.map(r => {
+    const h = Math.round((r.qa/100)*72);
+    const col = r.qa>=90?'var(--green)':r.qa>=85?'var(--amber)':'var(--red)';
+    return `<div title="${r.d}: ${r.qa}%" style="flex:1;min-width:10px;height:${h}px;background:${col};border-radius:3px 3px 0 0;cursor:default;"></div>`;
+  }).join('');
+  const dateHtml = sorted.map((r,i) => {
+    const show = n<=12 || i===0 || i===n-1 || i%Math.ceil(n/8)===0;
+    return `<div style="flex:1;min-width:10px;font-size:9px;color:var(--text-3);text-align:center;white-space:nowrap;overflow:hidden;">${show?r.d.slice(5):''}</div>`;
+  }).join('');
+  document.getElementById('hub-timeline').innerHTML = tlHtml;
+  document.getElementById('hub-timeline-dates').innerHTML = dateHtml;
+
+  // Section score bars
+  function secBar(label, val, color) {
+    return `<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+      <div style="font-size:11px;color:var(--text-2);min-width:24px;font-weight:600;">${label}</div>
+      <div style="flex:1;height:8px;background:var(--surface-2);border-radius:4px;overflow:hidden;">
+        <div style="height:100%;width:${val}%;background:${color};border-radius:4px;"></div>
+      </div>
+      <div style="font-size:11px;font-weight:600;color:${color};min-width:36px;text-align:right;">${parseFloat(val).toFixed(1)}%</div>
+    </div>`;
+  }
+  document.getElementById('hub-section-bars').innerHTML =
+    secBar('S1', s1Avg, 'var(--purple)') +
+    secBar('S2', s2Avg, 'var(--teal)') +
+    secBar('S3', s3Avg, 'var(--amber)') +
+    `<div style="margin-top:6px;padding-top:10px;border-top:1px solid var(--border);">` +
+    secBar('QA', qaAvg, 'var(--green)') +
+    `</div>`;
+
+  // AFI + WWW tags
+  function tagFreq(field) {
+    const freq = {};
+    audits.forEach(r => r[field].forEach(t => { freq[t]=(freq[t]||0)+1; }));
+    return Object.entries(freq).sort((a,b)=>b[1]-a[1]);
+  }
+  function renderTags(pairs, isAfi) {
+    if (!pairs.length) return hubNoTags(isAfi);
+    return pairs.map(([t,c]) => hubTag(`${t}${c>1?' ×'+c:''}`, isAfi)).join('');
+  }
+
+  document.getElementById('hub-afi-s1').innerHTML = renderTags(tagFreq('a1'), true);
+  document.getElementById('hub-afi-s2').innerHTML = renderTags(tagFreq('a2'), true);
+  document.getElementById('hub-afi-s3').innerHTML = renderTags(tagFreq('a3'), true);
+  document.getElementById('hub-www-s1').innerHTML = renderTags(tagFreq('w1'), false);
+  document.getElementById('hub-www-s2').innerHTML = renderTags(tagFreq('w2'), false);
+  document.getElementById('hub-www-s3').innerHTML = renderTags(tagFreq('w3'), false);
+
+  // Audit log
+  const logRows = sorted.map(r => {
+    const afiAll = [...r.a1,...r.a2,...r.a3];
+    const wwwAll = [...r.w1,...r.w2,...r.w3];
+    const afiHtml = afiAll.length ? afiAll.map(t=>hubTag(t,true)).join('') : '<span style="color:var(--text-3);font-style:italic;font-size:11px;">None</span>';
+    const wwwHtml = wwwAll.length ? wwwAll.slice(0,4).map(t=>hubTag(t,false)).join('') + (wwwAll.length>4?`<span style="font-size:10px;color:var(--text-3)"> +${wwwAll.length-4}</span>`:'') : '—';
+    const qaCol = r.qa>=90?'var(--green)':r.qa>=85?'var(--amber)':'var(--red)';
+    return `<tr>
+      <td class="mono" style="white-space:nowrap;color:var(--text-2);">${r.d}</td>
+      <td class="mono" style="font-weight:700;color:${qaCol};">${r.qa}%</td>
+      <td class="mono ${sc(r.s1)}">${r.s1}%</td>
+      <td class="mono ${sc(r.s2)}">${r.s2}%</td>
+      <td class="mono ${sc(r.s3)}">${r.s3}%</td>
+      <td>${afiHtml}</td>
+      <td>${wwwHtml}</td>
     </tr>`;
-  });
-  document.getElementById('www-tbody').innerHTML = html || '<tr class="empty-row"><td colspan="6">No agents selected.</td></tr>';
+  }).join('');
+  document.getElementById('hub-log-tbody').innerHTML = logRows ||
+    '<tr><td colspan="7" style="text-align:center;padding:24px;color:var(--text-3);">No audits in range</td></tr>';
 }
-
-buildChips('afi-chips', afiSelected, renderAFI);
-buildChips('www-chips', wwwSelected, renderWWW);
-renderAFI();
-renderWWW();
-renderInsightsCharts();
-
-
-
-
 
 // ── INSIGHTS CHARTS (dynamic, date-filtered) ──
 function renderInsightsCharts() {
@@ -1429,8 +1532,15 @@ window.switchTierView = function(tierKey, btn) {
   buildTierContent(cfg);
 };
 
-// Render default tier (T1) on load
-buildTierContent(TIER_CONFIGS[0]);
+// tier rendered via initAll
+
+// ── INIT (all functions defined above before these run) ──
+function initAll() {
+  initHubDropdown();
+  renderDash();
+  renderInsightsCharts();
+  buildTierContent(TIER_CONFIGS[0]);
+}
 
 // ── TAB SWITCHING ──
 window.showTab = function(name, btn) {
@@ -1440,7 +1550,10 @@ window.showTab = function(name, btn) {
   btn.classList.add('on');
   if (name === 'afi-www') renderAfiWww();
   if (name === 'insights') renderInsightsCharts();
+  if (name === 'hub') renderHub();
 };
+
+initAll();
 </script>
 <div style="text-align:center;padding:24px 32px;border-top:1px solid var(--border);margin-top:8px;">
   <span style="font-size:11px;color:var(--text-3);font-family:var(--sans);">
